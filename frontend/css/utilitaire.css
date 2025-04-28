@@ -1,0 +1,20 @@
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+button {
+  padding: 10px 20px;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 999px;
+  background-color: #FBBF77;
+}
+
+.flex-collum{
+  display: flex;
+  flex-direction: column;
+}

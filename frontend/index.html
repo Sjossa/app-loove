@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="frontend/css/all.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header class="text_menu">
+      <ul class="flex-row">
+        <li>
+          <a href="/app-loove/">
+            <img
+              class="logo"
+              src="frontend/images/logo.png"
+              alt="logo MeetLink"
+            />
+          </a>
+        </li>
+        <li><a href="#">Conférence</a></li>
+        <li><a href="#">Hackathon</a></li>
+        <li><a href="#">Webinaire</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><button>Button</button></li>
+      </ul>
+    </header>
+
+    <main>
+      <section class="main_acceuil">
+        <div>
+          <p>Rencontrez ceux avec qui vous allez coder demain</p>
+          <button>Inscription</button>
+          <p>Rejoignez des centaines de devs et de designers.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      setInterval(() => {
+        location.href =
+          location.href.split("?")[0] + "?" + new Date().getTime();
+      }, 20000);
+    </script>
+  </body>
+</html>

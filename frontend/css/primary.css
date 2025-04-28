@@ -1,0 +1,91 @@
+/* Ce fichier contient les styles de base qui définissent l'apparence globale de l'application,
+comme les polices, les couleurs de fond, et les éléments communs. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0f172a;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background-color: #0f1222;
+  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+  height: 15vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.main_acceuil {
+  position: relative;
+  background-image: url("../images/dev_groupe.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main_acceuil::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #0f172a;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.main_acceuil>* {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px ;
+}
+
+.main_acceuil> div p {
+  font-size: clamp(2rem, 3vw, 6rem);
+  color: rgb(104, 105, 106);
+   text-shadow:  10px 10px 10px rgba(0, 0, 0, 0.5);
+
+}
+
+.main_acceuil> div button{
+  padding: 35px 70px;
+  font-size: 5rem;
+  color: #0f1222;
+  box-shadow:  0px 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+.logo{
+  width: 11vw;
+  height: auto;
+
+}
+
+
+.text_menu {
+  font-size: clamp(1.5rem, 5vw, 5vh);
+  color: aliceblue;
+}
+
+
+
+ul {
+  list-style: none;
+  color: aliceblue;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
