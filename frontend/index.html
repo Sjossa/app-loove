@@ -7,40 +7,187 @@
     <title>Document</title>
   </head>
   <body>
-    <header class="text_menu">
-      <ul class="flex-row">
-        <li>
-          <a href="/app-loove/">
-            <img
-              class="logo"
-              src="frontend/images/logo.png"
-              alt="logo MeetLink"
-            />
-          </a>
-        </li>
-        <li><a href="#">Conférence</a></li>
-        <li><a href="#">Hackathon</a></li>
-        <li><a href="#">Webinaire</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><button>Button</button></li>
-      </ul>
-    </header>
+    <header></header>
 
     <main>
-      <section class="main_acceuil">
+      <section class="section_1_exterieur">
         <div>
           <p>Rencontrez ceux avec qui vous allez coder demain</p>
-          <button>Inscription</button>
+          <button data-path="chatbot">Inscription</button>
           <p>Rejoignez des centaines de devs et de designers.</p>
         </div>
       </section>
-    </main>
 
-    <script>
+      <section class="section_2_exterieur">
+        <p>Qui sont les devellopeur meetlink ?</p>
+
+        <div class="info">
+          <div class="card">
+            <img src="frontend/images/a.png" alt="" />
+            <p>
+              82% <br />
+              d’utilisateurs ont trouvé un collaborateur en moins de 10
+              jours.Des rencontres efficaces, sans perte de temps.
+            </p>
+          </div>
+
+          <div class="card">
+            <img src="frontend/images/a.png" alt="" />
+            <p>
+              82% <br />
+              d’utilisateurs ont trouvé un collaborateur en moins de 10
+              jours.Des rencontres efficaces, sans perte de temps.
+            </p>
+          </div>
+
+          <div class="card">
+            <img src="frontend/images/a.png" alt="" />
+            <p>
+              82% <br />
+              d’utilisateurs ont trouvé un collaborateur en moins de 10
+              jours.Des rencontres efficaces, sans perte de temps.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section_3_exterieur">
+        <p>Ils Parlent de nous</p>
+
+        <div class="carrousel_avis">
+          <button id="prev"><</button>
+          <div class="carrousel_container">
+            <ul class="avis">
+              <li>
+                <div class="info_de_base">
+                  <img src="frontend/images/axel.jpg" alt="" />
+                  <p>
+                    Axel lemaire <br />
+                    devellopeur frontend
+                  </p>
+                  <p></p>
+                </div>
+                <div class="avis_personne">
+                  <p>
+                    J’ai découvert MeetLink en cherchant un·e partenaire pour un
+                    side project. En deux jours, j’avais trouvé une
+                    collaboratrice motivée avec qui je bosse encore aujourd’hui.
+                    La plateforme est fluide, sérieuse, et vraiment pensée pour
+                    les développeurs.
+                  </p>
+                </div>
+              </li>
+
+              <li>
+                <div class="info_de_base">
+                  <img src="frontend/images/axel.jpg" alt="" />
+                  <p>
+                    Axel lemaire <br />
+                    devellopeur frontend
+                  </p>
+                  <p></p>
+                </div>
+                <div class="avis_personne">
+                  <p>
+                    J’ai découvert MeetLink en cherchant un·e partenaire pour un
+                    side project. En deux jours, j’avais trouvé une
+                    collaboratrice motivée avec qui je bosse encore aujourd’hui.
+                    La plateforme est fluide, sérieuse, et vraiment pensée pour
+                    les développeurs.
+                  </p>
+                </div>
+              </li>
+
+              <li>
+                <div class="info_de_base">
+                  <img src="frontend/images/axel.jpg" alt="" />
+                  <p>
+                    Axel lemaire <br />
+                    devellopeur frontend
+                  </p>
+                  <p></p>
+                </div>
+                <div class="avis_personne">
+                  <p>
+                    J’ai découvert MeetLink en cherchant un·e partenaire pour un
+                    side project. En deux jours, j’avais trouvé une
+                    collaboratrice motivée avec qui je bosse encore aujourd’hui.
+                    La plateforme est fluide, sérieuse, et vraiment pensée pour
+                    les développeurs.
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <button id="next">></button>
+        </div>
+      </section>
+    </main>
+    <!-- <script>
       setInterval(() => {
         location.href =
           location.href.split("?")[0] + "?" + new Date().getTime();
       }, 20000);
+    </script> -->
+
+    <script>
+      class Carousel {
+        constructor(container_select) {
+          this.container = document.querySelector(container_select);
+          this.track = this.container.querySelector(".avis");
+          this.slide = Array.from(this.track.children);
+          this.prevButton = this.container.querySelector("#prev");
+          this.nextButton = this.container.querySelector("#next");
+          this.currentIndex = 1;
+
+          this.slideWidth = this.slide[0].getBoundingClientRect().width;
+          this.setSlidePositions();
+          this.addEventListeners();
+          this.goToSlide(this.currentIndex);
+        }
+
+        setSlidePositions() {
+          this.slide.forEach((slide, index) => {
+            slide.style.left = this.slideWidth * index + "px";
+          });
+        }
+
+        goToSlide(index) {
+          const targetSlide = this.slide[index];
+          const amountToMove = targetSlide.style.left;
+          this.track.style.transform = "translateX(-" + amountToMove + ")";
+
+          this.track
+            .querySelector(".avis_actuelle")
+            ?.classList.remove("avis_actuelle");
+          targetSlide.classList.add("avis_actuelle");
+          this.currentIndex = index;
+        }
+
+        next() {
+          if (this.currentIndex < this.slide.length - 1) {
+            this.goToSlide(this.currentIndex + 1);
+          } else {
+            this.goToSlide(0);
+          }
+        }
+
+        prev() {
+          if (this.currentIndex > 0) {
+            this.goToSlide(this.currentIndex - 1);
+          } else {
+            this.goToSlide(this.slide.length - 1);
+          }
+        }
+
+        addEventListeners() {
+          this.nextButton.addEventListener("click", () => this.next());
+          this.prevButton.addEventListener("click", () => this.prev());
+        }
+      }
+
+      new Carousel(".carrousel_avis");
     </script>
+    <script src="frontend/js/routeur.js"></script>
   </body>
 </html>

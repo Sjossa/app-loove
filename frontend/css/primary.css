@@ -1,85 +1,33 @@
-/* Ce fichier contient les styles de base qui définissent l'apparence globale de l'application,
-comme les polices, les couleurs de fond, et les éléments communs. */
+/* primary.css */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
+.logo {
+  width: 10vw;
+  height: auto;
+  margin-top: 2vh;
+}
 body {
   background-color: #0f172a;
   font-family: Arial, sans-serif;
+  color: #ffffff;
 }
 
-header {
+.a {
   background-color: #0f1222;
   box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
   height: 15vh;
   width: 100%;
+}
+
+.a>nav {
   display: flex;
   align-items: center;
+  margin: 0 10px;
 }
-
-.main_acceuil {
-  position: relative;
-  background-image: url("../images/dev_groupe.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.main_acceuil::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: #0f172a;
-  opacity: 0.8;
-  z-index: 1;
-}
-
-.main_acceuil>* {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 20px ;
-}
-
-.main_acceuil> div p {
-  font-size: clamp(2rem, 3vw, 6rem);
-  color: rgb(104, 105, 106);
-   text-shadow:  10px 10px 10px rgba(0, 0, 0, 0.5);
-
-}
-
-.main_acceuil> div button{
-  padding: 35px 70px;
-  font-size: 5rem;
-  color: #0f1222;
-  box-shadow:  0px 10px 10px 10px rgba(0, 0, 0, 0.5);
-}
-
-.logo{
-  width: 11vw;
-  height: auto;
-
-}
-
-
-.text_menu {
-  font-size: clamp(1.5rem, 5vw, 5vh);
-  color: aliceblue;
-}
-
-
 
 ul {
   list-style: none;
@@ -89,3 +37,85 @@ ul {
   align-items: center;
   width: 100%;
 }
+
+
+
+.info{
+  display: flex;
+
+}
+
+.card{
+  display: flex ;
+  flex-direction: column;
+  text-align: center;
+  width: 200px;
+  height: 300PX;
+  margin: 0 10px;
+  background-color: antiquewhite;
+  border-radius: 20px;
+  padding: px;
+  gap: 10px;
+  align-items: center;
+}
+
+.card>img{
+  width: 100%;
+}
+
+.carrousel_avis img {
+  width: 120px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 999px;
+}
+
+.carrousel_avis  {
+  width: 300px;
+  flex-shrink: 0;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+}
+
+.carrousel_avis p {
+  text-align: center;
+}
+.info_de_base{
+  display: flex;
+  flex-direction: row;
+    display: flex;
+      align-items:center;
+      gap: 1Rem;
+}
+
+
+
+.carrousel_container{
+
+  width: 330px;
+
+}
+.carrousel_container li {
+  flex-shrink: 0;
+  width: 330px;
+  height: 330px;
+  background-color: aliceblue;
+  border-radius: 20px;
+  padding: 10px;
+  color: #0f1222;
+  filter: blur(3px);
+  z-index: 0;
+}
+
+.avis{
+  transition: transform 0.5s ease-in-out;
+}
+
+.avis_actuelle{
+  filter: drop-shadow(0px 6px 32px rgba(0, 0, 0, 0.25)) !important;
+  z-index: 5 !important;
+}
+

@@ -18,3 +18,13 @@ button {
   display: flex;
   flex-direction: column;
 }
+
+
+.text_menu {
+  font-size: clamp(1.5rem, 5vw, 5vh);
+  color: aliceblue;
+}
+
+section:not(:last-child) {
+  margin-bottom: 20px;
+}
