@@ -18,11 +18,8 @@ class SimpleRouter {
       const link = event.target.closest("a");
       const button = event.target.closest("button");
 
-
-
       if (link && link.href.startsWith(location.origin)) {
         event.preventDefault();
-
         const path = link.getAttribute("href");
         history.pushState(null, "", path);
         this.handleRoute(path);
@@ -62,8 +59,36 @@ class SimpleRouter {
 
       const html = await response.text();
       this.mainElement.innerHTML = html;
+
+      
+      const pageName = url.split("/").pop().replace(".html", "");
+      this.loadPageScript(pageName);
     } catch (error) {
       this.mainElement.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
+    }
+  }
+
+  async loadPageScript(pageName) {
+    try {
+      switch (pageName) {
+        case "index":
+
+          const { Carousel } = await import("./component/carrousel.js");
+          const carousel = new Carousel(".carrousel_avis");
+
+          break;
+
+          case "chatbot" :
+          const { Chatbot } = await import("./pages/chatbot.js");
+          const chatbot = new Chatbot();
+          chatbot.init();
+          break
+
+        default:
+          console.warn(`Pas de script JS trouvé pour ${pageName}`);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'importation du script JS :", error);
     }
   }
 
