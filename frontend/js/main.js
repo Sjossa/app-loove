@@ -2,7 +2,7 @@ class SimpleRouter {
   constructor() {
     this.mainElement = document.querySelector("main");
 
-    this.loadComponent("header", "frontend/components/header.html");
+    this.loadComponent("header", "/components/header.html");
 
     this.handleRoute(location.pathname);
 
@@ -35,7 +35,7 @@ class SimpleRouter {
   }
 
   async handleRoute(path) {
-    const base = "/app-loove";
+    const base = "/";
     if (path.startsWith(base)) {
       path = path.slice(base.length);
     }
@@ -44,9 +44,9 @@ class SimpleRouter {
     let pageUrl;
 
     if (page === "" || page === "index") {
-      pageUrl = `frontend/index.html`;
+      pageUrl = `index.html`;
     } else {
-      pageUrl = `frontend/pages/${page}.html`;
+      pageUrl = `pages/${page}.html`;
     }
 
     this.loadPage(pageUrl);
@@ -60,7 +60,7 @@ class SimpleRouter {
       const html = await response.text();
       this.mainElement.innerHTML = html;
 
-      
+
       const pageName = url.split("/").pop().replace(".html", "");
       this.loadPageScript(pageName);
     } catch (error) {
