@@ -75,7 +75,7 @@ ul {
   flex-shrink: 0;
   color: black;
   display: flex;
-  flex-direction: column;
+
   gap: 30px;
 
 }
@@ -96,6 +96,8 @@ ul {
 .carrousel_container{
 
   width: 330px;
+  display: flex;
+  flex-direction: row;
 
 }
 .carrousel_container li {
@@ -119,3 +121,41 @@ ul {
   z-index: 5 !important;
 }
 
+.carrousel_avis {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  /* à ajuster selon ton design */
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carrousel_container {
+  display: flex;
+  overflow: hidden;
+}
+
+.carrousel_avis button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #F5F1E6;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+#prev {
+  left: 0;
+}
+
+#next {
+  right: 0;
+}

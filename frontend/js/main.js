@@ -75,6 +75,10 @@ class SimpleRouter {
           const { Carousel } = await import("./component/carrousel.js");
           const carousel = new Carousel(".carrousel_avis");
 
+          const { Modal } = await import("./component/modal.js");
+          const modal = new Modal();
+
+
           break;
 
         case "chatbot":
@@ -115,3 +119,5 @@ class SimpleRouter {
 }
 
 new SimpleRouter();
+
+
