@@ -15,14 +15,14 @@ class UserController
 
   public function index()
   {
-    $stmt = $this->db->query("SELECT prenom FROM users");
+    $stmt = $this->db->query("SELECT * FROM users WHERE user_id = 1");
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($users);
   }
 
   public function show($id) {
-    // Afficher un utilisateur spécifique
+
   }
 
   public function create()
@@ -35,9 +35,19 @@ class UserController
       $nom = $donnees["nom"] ?? null;
       $age = $donnees["age"] ?? null;
       $email = $donnees["email"] ?? null;
-      
+      $password = $donnees["password"] ?? null;
+      // $profile_picture = $donnees["profile_picture"] ?? null;
+      $bio = $donnees["bio"] ?? null;
+      $role = $donnees["role"] ?? null;
 
-
+      if (!$prenom || !$nom || !$email || !$password) {
+        http_response_code(400);
+        echo json_encode([
+          "success" => false,
+          "message" => "Champs obligatoires manquants (prenom, nom, email, password)"
+        ]);
+        return;
+      }
 
       if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         http_response_code(400);
@@ -48,16 +58,23 @@ class UserController
         return;
       }
 
+      // Hachage du mot de passe
+      $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
       try {
         $stmt = $this->db->prepare("
-        INSERT INTO users (email,prenom, nom, age)
-        VALUES (:email, :prenom, :nom, :age)
+        INSERT INTO users (prenom, nom, age, email, password, bio, role)
+        VALUES (:prenom, :nom, :age, :email, :password, :bio, :role)
       ");
-        $stmt->bindParam(':email', $email);
         $stmt->bindParam(':prenom', $prenom);
-
         $stmt->bindParam(':nom', $nom);
         $stmt->bindParam(':age', $age);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $passwordHash);
+        // $stmt->bindParam(':profile_picture', $profile_picture);
+        $stmt->bindParam(':bio', $bio);
+        $stmt->bindParam(':role', $role);
+
         $stmt->execute();
 
         echo json_encode([
@@ -80,6 +97,7 @@ class UserController
       ]);
     }
   }
+
 
 
   public function update($id) {

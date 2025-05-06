@@ -6,7 +6,7 @@ class Chatbot {
       { key: "age", text: "Quel âge avez-vous ?" },
       { key: "email", text: "Quelle est votre adresse mail ?" },
       { key: "password", text: "Quelle sera votre mot de passe" },
-      { key: "photo", text: "Souhaitez-vous ajouter une photo de profil ?" },
+      // { key: "profile_picture", text: "Souhaitez-vous ajouter une photo de profil ?" },
       { key: "bio", text: "Souhaitez-vous rédiger une bio ?" },
       { key: "role", text: "Quel est votre métier/spécialisation ?" },
     ];

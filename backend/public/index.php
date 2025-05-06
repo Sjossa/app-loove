@@ -16,10 +16,9 @@ spl_autoload_register(function ($class) {
   }
 });
 
-// Instantiation du routeur avec l'URL de la requête
 $router = new Router($_SERVER['REQUEST_URI']);
 
-// Définition des routes
+
 
 $router->group('/users', function ($router) {
   $router->get('/index', [new UserController(), 'index']);

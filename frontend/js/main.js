@@ -72,17 +72,21 @@ class SimpleRouter {
     try {
       switch (pageName) {
         case "index":
-
           const { Carousel } = await import("./component/carrousel.js");
           const carousel = new Carousel(".carrousel_avis");
 
           break;
 
-          case "chatbot" :
+        case "chatbot":
           const { Chatbot } = await import("./pages/chatbot.js");
           const chatbot = new Chatbot();
           chatbot.init();
-          break
+          break;
+
+        case "profil":
+          const { Profil } = await import("./pages/profil.js");
+          const profil = new Profil();
+          break;
 
         default:
           console.warn(`Pas de script JS trouvé pour ${pageName}`);
