@@ -1,38 +1,32 @@
 <?php
+// index.php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use backend\config\Database;
+use backend\core\Router;
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(200);
+  exit;
+}
 
-spl_autoload_register(function ($class) {
-  $folders = ['../core/', '../config/', '../controllers/'];
+$database = new Database();
+$router = new Router($_SERVER['REQUEST_URI'], $database);
 
-  foreach ($folders as $folder) {
-    $file = $folder . $class . '.php';
-    if (file_exists($file)) {
-      require_once $file;
-      return;
-    }
-  }
-});
-
-$router = new Router($_SERVER['REQUEST_URI']);
-
-
-
-$router->group('/users', function ($router) {
-  $router->get('/index', [new UserController(), 'index']);
-  $router->post('/create', [new UserController(), 'create']);
-
+$router->group('/users', function ($router) use ($database) {
+  $userController = new \backend\Controllers\UserController($database);
+  $router->get('', [$userController, 'index']);
+  $router->post('/create', [$userController, 'create']);
+  $router->post('/login', [$userController, 'login']);
 });
 
 try {
-  // Lancer le routeur pour exécuter la route correspondante
   $router->run();
 } catch (Exception $e) {
-  // Si une erreur survient, afficher le message d'erreur
   echo 'Erreur : ' . $e->getMessage();
 }
-?>
-
-

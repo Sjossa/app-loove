@@ -1,15 +1,20 @@
 <?php
 
-// Classe Router pour la gestion des routes
+
+// src/core/Router.php
+namespace backend\core;
+
 class Router
 {
   private $url;
   private $routes = [];
 
-  // Constructeur qui prend l'URL actuelle pour la gestion de la route
-  public function __construct($url)
+  private $database;
+
+  public function __construct($url,$database)
   {
     $this->url = $url;
+    $this->database = $database;
   }
 
   public function group(string $prefix, callable $callback)
@@ -47,6 +52,7 @@ class Router
     $this->routes["GET"][] = $route;
     return $route;
   }
+
   // Méthode pour définir une route POST
   public function post($path, $callable)
   {
@@ -55,17 +61,16 @@ class Router
     return $route;
   }
 
-
-
   // Méthode pour exécuter la route correspondant à la requête
   public function run()
   {
     $url = $_SERVER['REQUEST_URI'];
-    $url = str_replace('/public', '', $url);
+    $url = str_replace('/public', '', $url); // On enlève le /public si nécessaire
     $url = parse_url($url, PHP_URL_PATH);
 
+    // Vérifie si la méthode de la requête existe pour cette route
     if (!isset($this->routes[$_SERVER['REQUEST_METHOD']])) {
-      throw new Exception('METHOD does not exist');
+      throw new \Exception('METHOD does not exist'); // Utilise \Exception pour la classe globale
     }
 
     foreach ($this->routes[$_SERVER['REQUEST_METHOD']] as $route) {
@@ -74,12 +79,10 @@ class Router
       }
     }
 
-    throw new Exception('No matching routes');
-
+    throw new \Exception('No matching routes'); // Si aucune route ne correspond
   }
 }
 
-// Classe Route pour la gestion d'une route spécifique
 class Route
 {
   private $path;
@@ -96,27 +99,29 @@ class Route
   {
     $url = trim($url, '/');
     $path = preg_replace('#:([\w]+)#', '([^/]+)', $this->path);
-    $regex = "#^$path$#i";
+    $regex = "#^$path$#i"; // Génère l'expression régulière
 
     if (!preg_match($regex, $url, $matches)) {
       return false;
     }
 
-    array_shift($matches);
+    array_shift($matches); // On enlève le premier élément qui est l'URL
     $this->matches = $matches;
     return true;
   }
 
   public function call()
   {
+    // Quel que soit le callable, on l'exécute directement
     return call_user_func_array($this->callable, $this->matches);
   }
+
 
   public function getController()
   {
     if (is_array($this->callable)) {
       return $this->callable[0];
-    } elseif (is_object($this->callable) && $this->callable instanceof Closure) {
+    } elseif (is_object($this->callable) && $this->callable instanceof \Closure) {
       return 'Closure';
     }
     return $this->callable;

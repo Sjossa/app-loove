@@ -60,7 +60,6 @@ class SimpleRouter {
       const html = await response.text();
       this.mainElement.innerHTML = html;
 
-
       const pageName = url.split("/").pop().replace(".html", "");
       this.loadPageScript(pageName);
     } catch (error) {
@@ -70,6 +69,7 @@ class SimpleRouter {
 
   async loadPageScript(pageName) {
     try {
+
       switch (pageName) {
         case "index":
           const { Carousel } = await import("./component/carrousel.js");
@@ -77,19 +77,12 @@ class SimpleRouter {
 
           const { Modal } = await import("./component/modal.js");
           const modal = new Modal();
-
-
           break;
 
         case "chatbot":
           const { Chatbot } = await import("./pages/chatbot.js");
           const chatbot = new Chatbot();
           chatbot.init();
-          break;
-
-        case "profil":
-          const { Profil } = await import("./pages/profil.js");
-          const profil = new Profil();
           break;
 
         default:
@@ -99,6 +92,7 @@ class SimpleRouter {
       console.error("Erreur lors de l'importation du script JS :", error);
     }
   }
+
 
   async loadComponent(selector, url) {
     try {
@@ -119,5 +113,3 @@ class SimpleRouter {
 }
 
 new SimpleRouter();
-
-

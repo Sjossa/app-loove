@@ -1,2 +1,6 @@
 .env
 .htaccess
+composer.json
+vendor
+composer.lock
+

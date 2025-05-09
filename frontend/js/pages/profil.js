@@ -5,9 +5,7 @@ class Profil {
     this.github = document.querySelector('[name="github"]');
   }
 
-  async recupDonnée(){
-    fetch("http://api.app-loove.local/users/profil");
-  }
+
 }
 
 
