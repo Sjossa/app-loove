@@ -39,7 +39,8 @@ export class Modal {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          this.showMessage("Connexion réussie !", "success");
+          document.cookie =
+            "jwt=" + result.jwt + ";   SameSite=Strict; path=/";
           this.close();
         } else {
           this.showMessage(

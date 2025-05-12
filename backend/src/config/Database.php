@@ -7,11 +7,11 @@ use PDOException;
 
 class Database
 {
-  private $host = 'localhost';
-  private $dbname = 'meetlink';
-  private $username = 'root';
-  private $password = '';
-  private $conn = null;
+  public $host = 'localhost';
+  public $dbname = 'meetlink';
+  public $username = 'root';
+  public $password = '';
+  public $conn = null;
 
   public function getConnection()
   {
