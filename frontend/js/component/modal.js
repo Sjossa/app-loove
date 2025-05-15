@@ -29,7 +29,7 @@ export class Modal {
       password: this.input_password.value,
     };
 
-    fetch("http://api.app-loove.local/users/login", {
+    fetch("https://api.app-loove.local/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,8 +39,8 @@ export class Modal {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          document.cookie =
-            "jwt=" + result.jwt + ";   SameSite=Strict; path=/";
+          document.cookie = "jwt=" + result.jwt + "; SameSite=Strict; path=/";
+          window.location.href = "profil?id=" + result.id;
           this.close();
         } else {
           this.showMessage(

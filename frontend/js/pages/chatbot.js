@@ -1,125 +1,162 @@
 class Chatbot {
   constructor() {
     this.questions = [
-      { key: "prenom", text: "Quelle est votre prenom ?" },
-      { key: "nom", text: "Quel est votre  nom de famille ?" },
+      { key: "prenom", text: "Quelle est votre prénom ?" },
+      { key: "nom", text: "Quel est votre nom de famille ?" },
       { key: "age", text: "Quel âge avez-vous ?" },
       { key: "email", text: "Quelle est votre adresse mail ?" },
-      { key: "password", text: "Quelle sera votre mot de passe" },
-      { key: "role", text: "pourquoi etes vous ici ?" },
-
-      { key: "bio", text: "Souhaitez-vous rédiger une bio ?" },
-      { key: "role", text: "Quel est votre métier/spécialisation ?" },
+      { key: "password", text: "Quel sera votre mot de passe ?" },
+      { key: "role", text: "Pourquoi êtes-vous ici ?" },
+      {
+        key: "profile_picture",
+        text: "Veuillez choisir une photo de profil (de préférence vous).",
+      },
     ];
 
-    this.talk = [
-      "Bonjour, je suis MCLink, votre compagnon pour l'inscription.",
-      "Wow, vous avez un magnifique prénom.",
-      "Voici un récapitulatif de vos données.",
-      "Merci pour vos réponses !",
-    ];
+    this.messages = {
+      intro: "Bonjour, je suis MCLink, votre compagnon pour l'inscription.",
+      end: "Merci pour vos réponses !",
+      errors: {
+        email: "Erreur : veuillez entrer une adresse mail valide.",
+        age: "Erreur : vous devez avoir au moins 15 ans.",
+        upload: "Erreur lors de l'upload de l'image.",
+      },
+    };
 
-    this.erreur = [
-      "Erreur : veuillez entrer une adresse mail valide.",
-      "Erreur : vous devez avoir au moins 15 ans.",
-    ];
+    this.responses = {};
+    this.index = 0;
 
-    this.reponse = {};
-    this.index_question = 0;
-    this.chat_zone = document.querySelector("#zone_chat");
-    this.next = document.querySelector("#next");
-    this.previous = document.querySelector("#previous");
+    this.chatZone = document.querySelector("#zone_chat");
     this.input = document.querySelector("#user_input");
+    this.btnNext = document.querySelector("#next");
+    this.btnPrev = document.querySelector("#previous");
   }
 
-  verif_question() {
-    const { key } = this.questions[this.index_question];
+  init() {
+    this.chatZone.innerHTML = this.messages.intro;
+
+    this.btnNext.addEventListener("click", () => this.Next_Question());
+    this.btnPrev.addEventListener("click", () => this.Prev_Question());
+
+    setTimeout(() => {
+      this.displayQuestion();
+    }, 1000);
+  }
+
+  displayQuestion() {
+    const current = this.questions[this.index];
+    this.chatZone.innerHTML = current.text;
+
+    if (current.key === "profile_picture") {
+      this.input.style.display = "none";
+      this.showPhotoInput();
+    } else {
+      this.input.style.display = "block";
+      this.input.value = this.responses[current.key] || "";
+    }
+  }
+
+  Question_valide() {
+    const { key } = this.questions[this.index];
     const value = this.input.value.trim();
 
-    if (key === "age") {
-      const ageRegex = /^(?:1[5-9]|[2-9][0-9]|\d{3,})$/;
-      if (!ageRegex.test(value)) {
-        this.chat_zone.innerHTML = this.erreur[1];
-        return false;
-      }
+    if (key === "age" && !/^(?:1[5-9]|[2-9][0-9]|\d{3,})$/.test(value)) {
+      this.chatZone.innerHTML = this.messages.errors.age;
+      return false;
     }
 
-    if (key === "email") {
-      const mailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!mailRegex.test(value)) {
-        this.chat_zone.innerHTML = this.erreur[0];
-        return false;
-      }
+    if (key === "email" && !/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+      this.chatZone.innerHTML = this.messages.errors.email;
+      return false;
     }
 
     return true;
   }
 
-  next_question() {
-    if (this.input && this.index_question < this.questions.length) {
-      if (!this.verif_question()) return;
+  Next_Question() {
+    const current = this.questions[this.index];
 
-      const current = this.questions[this.index_question];
-      this.reponse[current.key] = this.input.value;
+    if (current.key !== "profile_picture") {
+      if (!this.Question_valide()) return;
+      this.responses[current.key] = this.input.value.trim();
     }
 
-    this.index_question++;
+    this.index++;
 
-    if (this.index_question < this.questions.length) {
-      const current = this.questions[this.index_question];
-      this.chat_zone.innerHTML = current.text;
-      this.input.value = this.reponse[current.key] || "";
+    if (this.index < this.questions.length) {
+      this.displayQuestion();
     } else {
-      this.chat_zone.innerHTML = this.talk[3];
-      this.next.disabled = true;
-
-      console.log("Réponses collectées :", this.reponse);
-
-      fetch("http://api.app-loove.local/users/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.reponse),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          console.log("Réponse de l'API :", result);
-          this.chat_zone.innerHTML +=
-            "<br>Vos informations ont été envoyées avec succès.";
-        })
-        .catch((error) => {
-          console.error("Erreur lors de l'envoi :", error);
-          this.chat_zone.innerHTML +=
-            "<br>Une erreur est survenue lors de l'envoi.";
-        });
+      this.sendData();
     }
   }
 
-  previous_questions() {
-    if (this.index_question > 0) {
-      this.index_question--;
-      const current = this.questions[this.index_question];
-      this.chat_zone.innerHTML = current.text;
-      this.input.value = this.reponse[current.key] || "";
+  Prev_Question() {
+    if (this.index > 0) {
+      this.index--;
+      this.displayQuestion();
 
-      if (this.next.disabled) {
-        this.next.disabled = false;
+      if (this.btnNext.disabled) {
+        this.btnNext.disabled = false;
       }
     }
   }
 
-  start_chat() {
-    this.chat_zone.innerHTML = this.talk[0];
+  showPhotoInput() {
+    const inputPhoto = document.createElement("input");
+    inputPhoto.type = "file";
+    inputPhoto.accept = "image/*";
+    inputPhoto.style.marginTop = "10px";
+    inputPhoto.style.display = "block";
+    this.chatZone.appendChild(inputPhoto);
+
+    inputPhoto.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const res = await fetch("https://api.app-loove.local/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await res.json();
+          this.responses["profile_picture"] = data.path;
+
+          console.log("Image uploadée :", data.path);
+        } catch (error) {
+          console.error("Erreur upload image :", error);
+          this.chatZone.innerHTML += `<br>${this.messages.errors.upload}`;
+        }
+      }
+    });
   }
 
-  init() {
-    this.start_chat();
-    this.next.addEventListener("click", () => this.next_question());
-    this.previous.addEventListener("click", () => this.previous_questions());
-    setTimeout(() => {
-      this.chat_zone.innerHTML = this.questions[this.index_question].text;
-    }, 5000);
+  sendData() {
+    this.chatZone.innerHTML = this.messages.end;
+    this.btnNext.disabled = true;
+
+    console.log("Réponses collectées :", this.responses);
+
+    fetch("https://api.app-loove.local/users/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.responses),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log("Réponse API :", result);
+        this.chatZone.innerHTML +=
+          "<br>Vos informations ont été envoyées avec succès.";
+      })
+      .catch((err) => {
+        console.error("Erreur envoi final :", err);
+        this.chatZone.innerHTML +=
+          "<br>Une erreur est survenue lors de l'envoi.";
+      });
   }
 }
 
