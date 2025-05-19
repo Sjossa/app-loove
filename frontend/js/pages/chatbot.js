@@ -121,6 +121,11 @@ class Chatbot {
             body: formData,
           });
 
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("Réponse serveur non JSON : " + errorText);
+          }
+
           const data = await res.json();
           this.responses["profile_picture"] = data.path;
 

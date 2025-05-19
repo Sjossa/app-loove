@@ -6,5 +6,7 @@ class Upload{
 
   }
 
-
+  public function photo(){
+    echo "lol";
+  }
 }

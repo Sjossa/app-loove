@@ -39,7 +39,6 @@ export class Modal {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          document.cookie = "jwt=" + result.jwt + "; SameSite=Strict; path=/";
           window.location.href = "profil?id=" + result.id;
           this.close();
         } else {

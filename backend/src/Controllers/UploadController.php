@@ -14,15 +14,36 @@ class UploadController
 
   public function photo()
   {
-      if (is_dir("photo")) {
-          echo "Le dossier existe déjà.";
-      } else {
-          if (mkdir("../src/photo", 0777, true)) {
-              echo "Dossier 'photo' créé avec succès.";
-          } else {
-              echo "Erreur lors de la création du dossier.";
-          }
-      }
-  }
 
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      if (isset($_FILES['file']) && $_FILES['file']['error'] === 0) {
+        $fileTmpPath = $_FILES['file']['tmp_name'];
+        $fileName = basename($_FILES['file']['name']);
+        $repertoire = 'photo/';
+        $Name =  uniqid() . $fileName;
+        $destination = $repertoire . $Name;
+
+
+        if (!is_dir($repertoire)) {
+          mkdir($repertoire, 0755, true);
+        }
+
+        if (move_uploaded_file($fileTmpPath, $destination)) {
+          echo json_encode(['success' => true, 'path' => $destination]);
+        } else {
+          echo json_encode(['success' => false, 'error' => 'Erreur lors du déplacement du fichier.']);
+        }
+      } else {
+        echo json_encode(['success' => false, 'error' => 'Fichier non valide ou manquant.']);
+      }
+    }
+
+
+
+
+
+  }
 }
+
+

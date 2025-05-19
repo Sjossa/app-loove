@@ -56,15 +56,20 @@ class SimpleRouter {
     }
   }
 
+  async  Check_jwt() {
+    const response = await fetch("https://api.app-loove.local/jwt", {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.jwt;
+    } else {
+      return null;
+    }
+  }
   async loadPageScript(pageName) {
     try {
-      // Vérifie si l'utilisateur est authentifié avant de charger une page protégée
-      if (this.requiresAuth(pageName) && !this.isAuthenticated()) {
-        history.pushState(null, "", "/index");
-        this.handleRoute("/index");
-        return;
-      }
-
       switch (pageName) {
         case "index":
           const { Carousel } = await import("./component/carrousel.js");
@@ -81,15 +86,11 @@ class SimpleRouter {
           break;
 
         case "profil":
-          const jwt = this.getJwtToken();
+          const jwt = await this.Check_jwt();
           if (jwt) {
             const { Profil } = await import("./pages/profil.js");
             new Profil(jwt);
-          } else {
-            console.warn("Token JWT manquant.");
-            history.pushState(null, "", "/index");
-            this.handleRoute("/index");
-          }
+          } 
           break;
 
         default:
@@ -97,37 +98,6 @@ class SimpleRouter {
       }
     } catch (error) {
       console.error("Erreur lors du chargement du script :", error);
-    }
-  }
-
-  requiresAuth(pageName) {
-    const protectedPages = ["profil"];
-    return protectedPages.includes(pageName);
-  }
-
-  isAuthenticated() {
-    return document.cookie.split("; ").some((c) => c.startsWith("jwt="));
-  }
-
-  getJwtToken() {
-    return (
-      document.cookie
-        .split("; ")
-        .find((c) => c.startsWith("jwt="))
-        ?.split("=")[1] || null
-    );
-  }
-
-  getUserFromToken() {
-    const token = this.getJwtToken();
-    if (!token) return null;
-
-    try {
-      const payloadBase64 = token.split(".")[1];
-      return JSON.parse(atob(payloadBase64));
-    } catch (error) {
-      console.error("Erreur lors du décodage du token :", error);
-      return null;
     }
   }
 

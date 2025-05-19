@@ -1,10 +1,15 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 use backend\config\Database;
 use backend\core\Router;
 use backend\Controllers\UserController;
 use backend\Controllers\UploadController;
+use backend\core\jwt;
 
 use Dotenv\Dotenv;
 
@@ -12,9 +17,12 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '\..');
 $dotenv->load();
 
 
-header("Access-Control-Allow-Origin: *");
+$allowed_origin = 'https://app-loove.local';
+
+header("Access-Control-Allow-Origin: $allowed_origin");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   http_response_code(200);
@@ -37,13 +45,20 @@ try {
     $router->post('/profil', [$userController, 'profil']);
   });
 
-  $router -> group('upload', function($router) {
+  $router -> group('/upload', function($router) {
     $UploadController = new UploadController();
 
-    $router->get('', [$UploadController,'photo']);
-
-
+    $router->post('', [$UploadController,'photo']);
   });
+
+  $router -> group('/jwt', function($router) {
+
+    $jwt = new jwt();
+
+    $router->get('', [$jwt,'jwt']);
+  });
+
+
 
 
   $router->run();
