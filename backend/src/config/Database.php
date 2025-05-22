@@ -10,7 +10,7 @@ class Database
   public $host = 'localhost';
   public $dbname = 'meetlink';
   public $username = 'root';
-  public $password = '';
+  public $password = '0000';
   public $conn = null;
 
   public function getConnection()

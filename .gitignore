@@ -3,4 +3,6 @@
 composer.json
 vendor
 composer.lock
+photo
 
+composer.phar

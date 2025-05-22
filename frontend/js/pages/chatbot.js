@@ -116,7 +116,7 @@ class Chatbot {
           const formData = new FormData();
           formData.append("file", file);
 
-          const res = await fetch("https://api.app-loove.local/upload", {
+          const res = await fetch("https://back.meetlink.local/upload", {
             method: "POST",
             body: formData,
           });
@@ -144,7 +144,7 @@ class Chatbot {
 
     console.log("Réponses collectées :", this.responses);
 
-    fetch("https://api.app-loove.local/users/create", {
+    fetch("https://back.meetlink.local/users/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

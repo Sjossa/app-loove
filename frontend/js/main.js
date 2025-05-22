@@ -32,14 +32,27 @@ class SimpleRouter {
     });
   }
 
-  async handleRoute(path) {
-    const cleanPath = path.replace(/^\/+/, "");
-    const page =
-      cleanPath === "" || cleanPath === "index" ? "index" : cleanPath;
-    const pageUrl = page === "index" ? "index.html" : `pages/${page}.html`;
+ async handleRoute(path) {
+  const cleanPath = path.replace(/^\/+/, "");
 
-    this.loadPage(pageUrl);
+  const jwt = await this.checkJWT();
+
+  let page;
+  let pageUrl;
+
+  if (!jwt) {
+    page = cleanPath === "" || cleanPath === "index" ? "index_off" : cleanPath;
+    pageUrl = page === "index_off" ? "pages/index_off.html" : `pages/${page}.html`;
+  } else {
+    page = cleanPath === "" || cleanPath === "index" ? "index_on" : cleanPath;
+    pageUrl = page === "index_on" ? "pages/index_on.html" : `pages/${page}.html`;
   }
+
+  // Charger la page correspondante
+  await this.loadPage(pageUrl);
+}
+
+
 
   async loadPage(url) {
     try {
@@ -50,54 +63,9 @@ class SimpleRouter {
       this.mainElement.innerHTML = html;
 
       const pageName = url.split("/").pop().replace(".html", "");
-      this.loadPageScript(pageName);
+      await this.loadPageScript(pageName);
     } catch (error) {
       this.mainElement.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
-    }
-  }
-
-  async  Check_jwt() {
-    const response = await fetch("https://api.app-loove.local/jwt", {
-      method: "GET",
-      credentials: "include",
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data.jwt;
-    } else {
-      return null;
-    }
-  }
-  async loadPageScript(pageName) {
-    try {
-      switch (pageName) {
-        case "index":
-          const { Carousel } = await import("./component/carrousel.js");
-          new Carousel(".carrousel_avis");
-
-          const { Modal } = await import("./component/modal.js");
-          new Modal();
-          break;
-
-        case "chatbot":
-          const { Chatbot } = await import("./pages/chatbot.js");
-          const chatbot = new Chatbot();
-          chatbot.init();
-          break;
-
-        case "profil":
-          const jwt = await this.Check_jwt();
-          if (jwt) {
-            const { Profil } = await import("./pages/profil.js");
-            new Profil(jwt);
-          } 
-          break;
-
-        default:
-          console.warn(`Aucun script associé à la page : ${pageName}`);
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement du script :", error);
     }
   }
 
@@ -115,6 +83,61 @@ class SimpleRouter {
       console.error(
         `Erreur lors du chargement du composant ${selector} : ${error.message}`
       );
+    }
+  }
+
+  async checkJWT() {
+  try {
+    const response = await fetch("https://back.meetlink.local/profil", {
+      method: "POST",
+      credentials: "include",
+    });
+
+        if (response.ok) {
+      const data = await response.json();
+      return data.jwt;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Erreur lors de la vérification du JWT :", error);
+    return null;
+  }
+}
+
+
+  async loadPageScript(pageName) {
+    try {
+      switch (pageName) {
+        case "index_off":
+          const { Carousel } = await import("./component/carrousel.js");
+          new Carousel(".carrousel_avis");
+
+          const { Modal } = await import("./component/modal.js");
+          new Modal();
+          break;
+
+        case "chatbot":
+          const { Chatbot } = await import("./pages/chatbot.js");
+          const chatbot = new Chatbot();
+          chatbot.init();
+          break;
+
+        case "profil":
+          const jwt = await this.checkJWT();
+          if (jwt) {
+            const { Profil } = await import("./pages/profil.js");
+            new Profil(jwt);
+          } else {
+            console.warn("JWT non trouvé, redirection ou message à prévoir.");
+          }
+          break;
+
+        default:
+          console.warn(`Aucun script associé à la page : ${pageName}`);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement du script :", error);
     }
   }
 }

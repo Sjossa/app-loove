@@ -67,6 +67,7 @@ class Router
     $url = $_SERVER['REQUEST_URI'];
     $url = str_replace('/public', '', $url); // On enlève le /public si nécessaire
     $url = parse_url($url, PHP_URL_PATH);
+error_log("METHOD: " . $_SERVER['REQUEST_METHOD']);
 
     // Vérifie si la méthode de la requête existe pour cette route
     if (!isset($this->routes[$_SERVER['REQUEST_METHOD']])) {

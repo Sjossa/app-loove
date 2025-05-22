@@ -29,12 +29,13 @@ export class Modal {
       password: this.input_password.value,
     };
 
-    fetch("https://api.app-loove.local/users/login", {
+    fetch("https://back.meetlink.local/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(userData),
+      credentials: "include"
     })
       .then((response) => response.json())
       .then((result) => {

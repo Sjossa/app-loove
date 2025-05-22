@@ -1,7 +1,7 @@
 <?php
 namespace backend\Controllers;
 
-use backend\Models\upload;
+use backend\models\Upload;
 
 class UploadController
 {

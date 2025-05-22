@@ -1,5 +1,5 @@
 <?php
-namespace Backend\Models;
+namespace backend\Models;
 
 use PDO;
 use PDOException;

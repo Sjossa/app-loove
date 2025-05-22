@@ -1,7 +1,8 @@
 <?php
 namespace backend\Controllers;
 
-use backend\Models\User;
+use backend\models\User;
+use backend\Core\SessionManager;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Exception;
@@ -15,63 +16,69 @@ class UserController
         $this->userModel = new User($database);
     }
 
-    public function create()
+    public function create(): void
     {
-        $donnees = json_decode(file_get_contents("php://input"), true);
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!$donnees) {
+        if (!$data) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Données JSON manquantes ou mal formées"]);
+            echo json_encode(["success" => false, "message" => "Données JSON invalides"]);
             return;
         }
 
-        $prenom = $donnees["prenom"] ?? null;
-        $nom = $donnees["nom"] ?? null;
-        $age = $donnees["age"] ?? null;
-        $email = $donnees["email"] ?? null;
-        $password = $donnees["password"] ?? null;
-        $profile_picture = $donnees["profile_picture"] ?? null;
+        $requiredFields = ["prenom", "nom", "email", "password", "profile_picture"];
+        foreach ($requiredFields as $field) {
+            if (empty($data[$field])) {
+                http_response_code(400);
+                echo json_encode(["success" => false, "message" => "Le champ '$field' est obligatoire"]);
+                return;
+            }
+        }
 
-        if (!$prenom || !$nom || !$email || !$password || !$profile_picture) {
+        if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Champs obligatoires manquants"]);
+            echo json_encode(["success" => false, "message" => "Email invalide"]);
             return;
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Adresse email invalide"]);
-            return;
-        }
-
-        $userId = $this->userModel->create($prenom, $nom, $age, $email, $password, $profile_picture);
+        $userId = $this->userModel->create(
+            $data["prenom"],
+            $data["nom"],
+            $data["age"] ?? null,
+            $data["email"],
+            $data["password"],
+            $data["profile_picture"]
+        );
 
         if ($userId) {
-            echo json_encode(["success" => true, "message" => "Utilisateur enregistré avec succès", "id" => $userId]);
+            echo json_encode(["success" => true, "message" => "Utilisateur enregistré", "id" => $userId]);
         } else {
             http_response_code(500);
-            echo json_encode(["success" => false, "message" => "Erreur lors de l'insertion"]);
+            echo json_encode(["success" => false, "message" => "Erreur serveur"]);
         }
     }
 
-    public function login()
-    {
-        session_start();
-        $key = $_ENV['JWT_SECRET'] ?? '';
-        $donnees = json_decode(file_get_contents("php://input"), true);
+    public function login(): void
+{
+        header('Content-Type: application/json');
+        SessionManager::startSession();
 
-        if (!$donnees) {
+        $key = $_ENV['JWT_SECRET'] ?? '';
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!$data || !isset($data['email'], $data['password'])) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Données d'entrée invalides"]);
+            echo json_encode(["success" => false, "message" => "Email et mot de passe requis"]);
             return;
         }
 
-        $email = $donnees["email"] ?? '';
-        $password = $donnees["password"] ?? '';
+        $email = $data['email'];
+        $password = $data['password'];
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Adresse email invalide"]);
+            echo json_encode(["success" => false, "message" => "Email invalide"]);
             return;
         }
 
@@ -79,7 +86,7 @@ class UserController
 
         if ($user && password_verify($password, $user['password'])) {
             $payload = [
-                "date" => time(),
+                "iat" => time(),
                 "exp" => time() + 3600,
                 "user_id" => $user['user_id'],
                 "email" => $email
@@ -88,52 +95,56 @@ class UserController
             $jwt = JWT::encode($payload, $key, 'HS256');
             $_SESSION['jwt'] = $jwt;
 
-            echo json_encode(["success" => true, "message" => "Connexion réussie", "id" => $user['user_id']]);
+            echo json_encode([
+                "success" => true,
+                "message" => "Connexion réussie",
+                "id" => $user['user_id'],
+                "session_id" => session_id()
+            ]);
         } else {
             http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Email ou mot de passe incorrect"]);
+            echo json_encode(["success" => false, "message" => "Identifiants incorrects"]);
         }
     }
 
-    public function profil()
+    public function profil(): void
     {
-        session_start();
-        $headers = getallheaders();
-        $authorization = $headers['Authorization'] ?? '';
+        header('Content-Type: application/json');
+        SessionManager::startSession();
 
-        if (!preg_match('/Bearer\s(\S+)/', $authorization, $matches)) {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+
+        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Jeton manquant"]);
+            echo json_encode(["success" => false, "message" => "Jeton absent"]);
             return;
         }
 
         $jwt = $matches[1];
         $key = $_ENV['JWT_SECRET'] ?? '';
 
-        if (!$key) {
-            http_response_code(500);
-            echo json_encode(["success" => false, "message" => "Clé secrète manquante"]);
-            return;
-        }
-
         try {
-            $decode = JWT::decode($jwt, new Key($key, 'HS256'));
+            $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+            $user = $this->userModel->getByID($decoded->user_id);
+
+            if ($user) {
+                if (!empty($user['profile_picture'])) {
+                    $user['profile_picture'] = 'https://back.meetlink.local//' . $user['profile_picture'];
+                }
+
+                echo json_encode(["success" => true, "user" => $user]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["success" => false, "message" => "Utilisateur non trouvé"]);
+            }
         } catch (Exception $e) {
             http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Jeton invalide ou expiré", "error" => $e->getMessage()]);
-            return;
-        }
-
-        $user = $this->userModel->getByID($decode->user_id);
-
-        if ($user) {
-            if (!empty($user['profile_picture'])) {
-                $user['profile_picture'] = 'https://api.app-loove.local/' . $user['profile_picture'];
-            }
-            echo json_encode(["success" => true, "user" => $user]);
-        } else {
-            http_response_code(404);
-            echo json_encode(["success" => false, "message" => "Utilisateur non trouvé"]);
+            echo json_encode([
+                "success" => false,
+                "message" => "Jeton invalide ou expiré",
+                "error" => $e->getMessage()
+            ]);
         }
     }
 }

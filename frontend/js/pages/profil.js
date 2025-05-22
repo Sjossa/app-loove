@@ -13,7 +13,7 @@ export class Profil {
 
   async loadProfile() {
     try {
-      const response = await fetch("https://api.app-loove.local/users/profil", {
+      const response = await fetch("https://back.meetlink.local/users/profil", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.jwt}`,
@@ -39,5 +39,6 @@ export class Profil {
     if (this.profile_picture)
       this.profile_picture.src =
         user.profile_picture || "chemin/par-defaut.jpg";
+
   }
 }

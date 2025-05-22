@@ -1,69 +1,83 @@
 <?php
+
+
 require_once __DIR__ . '/../vendor/autoload.php';
+
+use backend\config\Database;
+use backend\Core\Router;
+use backend\Controllers\UserController;
+use backend\Controllers\UploadController;
+use backend\Controllers\ProfilController;
+
+use backend\Core\Jeton;
+use Dotenv\Dotenv;
+
+// -----------------------------
+// Configuration des erreurs PHP
+// -----------------------------
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-use backend\config\Database;
-use backend\core\Router;
-use backend\Controllers\UserController;
-use backend\Controllers\UploadController;
-use backend\core\jwt;
+// ----------------------
+// Chargement du .env
+// ----------------------
 
-use Dotenv\Dotenv;
-
-$dotenv = Dotenv::createImmutable(__DIR__ . '\..');
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
+// --------------------------------------------
+// Configuration CORS pour autoriser le frontend
+// --------------------------------------------
 
-$allowed_origin = 'https://app-loove.local';
 
-header("Access-Control-Allow-Origin: $allowed_origin");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+$allowed_origin = 'https://meetlink.local'; // domaine frontend
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-  http_response_code(200);
-  exit;
+if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === $allowed_origin) {
+    header("Access-Control-Allow-Origin: $allowed_origin");
+    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Credentials: true");
 }
+
+// Réponse directe aux requêtes OPTIONS (prévols CORS)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// ----------------------
+// Lancement de l'application
+// ----------------------
 
 try {
+    $database = new Database();
+    $router = new Router($_SERVER['REQUEST_URI'], $database);
 
-  $database = new Database();
+    // Groupe : /users
+    $router->group('/users', function ($router) use ($database) {
+        $userController = new UserController($database);
 
+        $router->post('/create', [$userController, 'create']);
+        $router->post('/login', [$userController, 'login']);
+        $router->post('/profil', [$userController, 'profil']);
+    });
 
-  $router = new Router($_SERVER['REQUEST_URI'], $database);
+    // Groupe : /upload
+    $router->group('/upload', function($router) {
+        $uploadController = new UploadController();
+        $router->post('', [$uploadController, 'photo']);
+    });
 
-  $router->group('/users', function ($router) use ($database) {
-    $userController = new UserController($database);
+    // Groupe : /profil
+    $router->group('/profil', function($router) {
+        $profil = new ProfilController();
+        $router->post('', [$profil, 'VerificationToken']);
+    });
 
-    $router->get('', [$userController, 'index']);
-    $router->post('/create', [$userController, 'create']);
-    $router->post('/login', [$userController, 'login']);
-    $router->post('/profil', [$userController, 'profil']);
-  });
-
-  $router -> group('/upload', function($router) {
-    $UploadController = new UploadController();
-
-    $router->post('', [$UploadController,'photo']);
-  });
-
-  $router -> group('/jwt', function($router) {
-
-    $jwt = new jwt();
-
-    $router->get('', [$jwt,'jwt']);
-  });
-
-
-
-
-  $router->run();
+    $router->run();
 
 } catch (Exception $e) {
-  echo 'Erreur : ' . $e->getMessage();
+    echo 'Erreur : ' . $e->getMessage();
 }
-
