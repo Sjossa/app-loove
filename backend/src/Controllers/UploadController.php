@@ -5,11 +5,11 @@ use backend\models\Upload;
 
 class UploadController
 {
-  private $UploadModel;
+
 
   public function __construct()
   {
-    $this->UploadModel = new upload();
+
   }
 
   public function photo()

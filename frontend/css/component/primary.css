@@ -1,0 +1,237 @@
+/*header*/
+header {
+  background-color: #0f1222;
+  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  min-height: 70px;
+}
+
+/* Liste de navigation */
+.nav-list {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 1rem;
+}
+
+/* Éléments de navigation */
+.nav-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Liens de navigation */
+.nav-link {
+  color: #f0f8ff; /* aliceblue */
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FBBF77;
+  transform: translateY(-2px);
+}
+
+/* Logo */
+.brand-logo {
+  width: clamp(60px, 8vw, 120px);
+  height: auto;
+  margin-top: 2vh;
+  transition: transform 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Bouton CTA (Connexion) */
+.nav-cta {
+  margin-left: 1rem;
+}
+
+.login-trigger {
+  background-color: #FBBF77;
+  color: #0f1222;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(251, 191, 119, 0.3);
+}
+
+.login-trigger:hover {
+  background-color: #f0ba7a;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(251, 191, 119, 0.4);
+}
+
+.login-trigger:active {
+  transform: translateY(-1px);
+}
+
+
+
+@media (max-width: 768px) {
+  .main-nav {
+    padding: 0 0.5rem;
+    min-height: 60px;
+  }
+
+  .nav-list {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .login-trigger {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-link:not(.brand-logo) {
+    font-size: 0.8rem;
+  }
+
+  /* Masquer certains liens */
+  .nav-item:nth-child(3) {
+    display: none;
+  }
+}
+
+
+/* =============================
+   === BOUTONS GÉNÉRAUX ===
+   ============================= */
+
+button {
+  padding: 10px 10px;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 999px;
+  background-color: #FBBF77;
+}
+
+
+/* =============================
+   === CARTES (CARDS) ===
+   ============================= */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 200px;
+  height: 300px;
+  margin: 0 10px;
+  background-color: antiquewhite;
+  border-radius: 20px;
+  padding: 10px;
+  gap: 10px;
+  align-items: center;
+}
+
+.card > img {
+  width: 100%;
+}
+
+
+/* =============================
+   === SECTIONS DE L’INDEX ===
+   ============================= */
+
+/* Section 1 - Hero */
+.section_1_exterieur {
+  position: relative;
+  background-image: url("../../images/aaaa.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.section_1_exterieur::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #0f172a;
+  opacity: 0.8;
+}
+
+.section_1_exterieur > * {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.section_1_exterieur > div p {
+  color: rgb(248, 250, 252);
+  text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.section_1_exterieur > button {
+  /* padding: 20px 60px; */
+  font-size: 5rem;
+  color: #0f1222;
+  box-shadow: 0px 10px 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Section 2 - Présentation */
+.section_2_exterieur {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.section_2_exterieur > p {
+  letter-spacing: 5px;
+  text-align: center;
+  font-size: 5vh;
+  color: antiquewhite;
+}
+
+
+
+.section_3_exterieur > p {
+  font-size: 5vh;
+}

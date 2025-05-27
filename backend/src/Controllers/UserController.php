@@ -17,47 +17,56 @@ class UserController
     }
 
     public function create(): void
-    {
-        header('Content-Type: application/json');
-        $data = json_decode(file_get_contents("php://input"), true);
+{
+      header('Content-Type: application/json');
+      $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!$data) {
+      if (!$data) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Données JSON invalides"]);
+        return;
+      }
+
+      $required = ["prenom", "nom", "email", "password"];
+      foreach ($required as $field) {
+        if (empty($data[$field])) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Données JSON invalides"]);
+            echo json_encode(["success" => false, "message" => "Le champ '$field' est obligatoire"]);
             return;
-        }
-
-        $requiredFields = ["prenom", "nom", "email", "password", "profile_picture"];
-        foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
-                http_response_code(400);
-                echo json_encode(["success" => false, "message" => "Le champ '$field' est obligatoire"]);
-                return;
-            }
-        }
-
-        if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Email invalide"]);
-            return;
-        }
-
-        $userId = $this->userModel->create(
-            $data["prenom"],
-            $data["nom"],
-            $data["age"] ?? null,
-            $data["email"],
-            $data["password"],
-            $data["profile_picture"]
-        );
-
-        if ($userId) {
-            echo json_encode(["success" => true, "message" => "Utilisateur enregistré", "id" => $userId]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["success" => false, "message" => "Erreur serveur"]);
         }
     }
+
+    if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(["success" => false, "message" => "Email invalide"]);
+        return;
+    }
+
+
+    $userId = $this->userModel->create(
+        $data["prenom"],
+        $data["nom"],
+        $data["age"] ?? null,
+        $data["localisation"] ?? null,
+        $data["email"],
+        $data["password"],
+        $data["statut"] ?? null,
+        $data["orientation"] ?? null,
+        $data["relation_recherchee"] ?? null,
+        $data["interets"] ?? null,
+        $data["bio"] ?? null,
+        $data["petit_plus"] ?? null,
+        $data["profile_picture"] ?? null
+    );
+
+    if ($userId) {
+        echo json_encode(["success" => true, "message" => "Utilisateur enregistré", "id" => $userId]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Erreur serveur"]);
+    }
+}
+
 
     public function login(): void
 {
@@ -88,7 +97,7 @@ class UserController
             $payload = [
                 "iat" => time(),
                 "exp" => time() + 3600,
-                "user_id" => $user['user_id'],
+                "id" => $user['id'],
                 "email" => $email
             ];
 
@@ -98,17 +107,17 @@ class UserController
             echo json_encode([
                 "success" => true,
                 "message" => "Connexion réussie",
-                "id" => $user['user_id'],
+                "id" => $user['id'],
                 "session_id" => session_id()
             ]);
         } else {
             http_response_code(401);
             echo json_encode(["success" => false, "message" => "Identifiants incorrects"]);
         }
-    }
+}
 
-    public function profil(): void
-    {
+public function profil(): void
+{
         header('Content-Type: application/json');
         SessionManager::startSession();
 
@@ -126,7 +135,7 @@ class UserController
 
         try {
             $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
-            $user = $this->userModel->getByID($decoded->user_id);
+            $user = $this->userModel->getByID($decoded->id);
 
             if ($user) {
                 if (!empty($user['profile_picture'])) {
@@ -146,5 +155,38 @@ class UserController
                 "error" => $e->getMessage()
             ]);
         }
+}
+
+  public function update() {
+SessionManager::startSession();
+
+    $data = json_decode(file_get_contents("php://input"), true);
+    $jwt = $_SESSION['jwt'];
+    $key = $_ENV['JWT_SECRET'] ?? '';
+    $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+
+    $id = $decoded->id;
+
+    $userupdate = $this->userModel->update(
+        $id,
+        $data["prenom"],
+        $data["nom"],
+        $data["age"] ?? null,
+        $data["localisation"] ?? null,
+        $data["statut"] ?? null,
+        $data["orientation"] ?? null,
+        $data["relation_recherchee"] ?? null,
+        $data["interets"] ?? null,
+        $data["bio"] ?? null,
+        $data["petit_plus"] ?? null,
+        $data["profile_picture"] ?? null
+    );
+
+    if ($userupdate) {
+        echo json_encode(["success" => true, "message" => "Profil mis à jour"]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Erreur lors de la mise à jour"]);
     }
+}
 }

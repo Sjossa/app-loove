@@ -1,32 +1,59 @@
+<nav class="main-nav">
+  <ul class="nav-list">
+    <li class="nav-item nav-logo">
+      <a href="index" class="nav-link">
+        <img class="brand-logo" src="/images/logo.png" alt="logo MeetLink" />
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="profil" class="nav-link">Profil</a>
+    </li>
+    <li class="nav-item">
+      <a href="" class="nav-link">Hackathon</a>
+    </li>
+    <li class="nav-item">
+      <a href="" class="nav-link">Contact</a>
+    </li>
+    <li class="nav-item nav-cta">
+      <button class="btn btn-primary login-trigger">Connexion</button>
+    </li>
+  </ul>
+</nav>
+<div id="messageBox" class="message"></div>
 
-  <nav>
-    <ul class="flex-row">
-      <li>
-        <a href="index">
-          <img class="logo" src="/images/logo.png" alt="logo MeetLink" />
-        </a>
-      </li>
-      <li><a href="profil">profil</a></li>
-      <li><a href="">Hackathon</a></li>
-      <li><a href="">Contact</a></li>
-      <li><button class="connexion">Button</button></li>
-    </ul>
-  </nav>
-
-
-<div id="modalConnexion" class="hidden">
-  <div class="modal-content">
-    <span class="close-btn">x</span>
-    <h2>Connexion</h2>
-    <form method="post">
-      <input type="email" placeholder="Email" id="email_input" required /><br />
-      <input
-        type="password"
-        placeholder="Mot de passe"
-        id="email_password"
-        required
-      /><br />
-      <button id="button_connexion">Se connecter</button>
-    </form>
+<!-- Modal de connexion -->
+<div id="login-modal" class="modal hidden">
+  <div class="modal-container">
+    <button class="modal-close" aria-label="Fermer">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Connexion</h2>
+    </div>
+    <div class="modal-body">
+      <form method="post" class="login-form">
+        <div class="form-group">
+          <input
+            type="email"
+            placeholder="Email"
+            id="login-email"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            id="login-password"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-full">
+            Se connecter
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -1,59 +1,47 @@
+export class Carousel {
+  constructor(containerSelector) {
+    this.container = document.querySelector(".carrousel_container");
+    this.track = this.container.querySelector(".avis");
+    this.slides = Array.from(this.track.children);
+    this.prevButton = this.container.querySelector("#prev");
+    this.nextButton = this.container.querySelector("#next");
 
-      class Carousel {
-        constructor(container_select) {
-          this.container = document.querySelector(container_select);
-          this.track = this.container.querySelector(".avis");
-          this.slide = Array.from(this.track.children);
-          this.prevButton = this.container.querySelector("#prev");
-          this.nextButton = this.container.querySelector("#next");
-          this.currentIndex = 1;
+    this.totalSlides = this.slides.length;
+    this.centerIndex = 0
 
-          this.slideWidth = this.slide[0].getBoundingClientRect().width;
-          this.setSlidePositions();
-          this.addEventListeners();
-          this.goToSlide(this.currentIndex);
-        }
+    this.updateClasses();
+    this.addEventListeners();
+  }
 
-        setSlidePositions() {
-          this.slide.forEach((slide, index) => {
-            slide.style.left = this.slideWidth * index + "px";
-          });
-        }
+  updateClasses() {
+    this.slides.forEach(slide => {
+      slide.classList.remove("slide-current", "slide-previous", "slide-next");
+    });
 
-        goToSlide(index) {
-          const targetSlide = this.slide[index];
-          const amountToMove = targetSlide.style.left;
-          this.track.style.transform = "translateX(-" + amountToMove + ")";
+    const prevIndex = (this.centerIndex - 1 + this.totalSlides) % this.totalSlides;
+    const nextIndex = (this.centerIndex + 1) % this.totalSlides;
 
-          this.track
-            .querySelector(".avis_actuelle")
-            ?.classList.remove("avis_actuelle");
-          targetSlide.classList.add("avis_actuelle");
-          this.currentIndex = index;
-        }
+    this.slides[this.centerIndex].classList.add("slide-current");
+    this.slides[prevIndex].classList.add("slide-previous");
+    this.slides[nextIndex].classList.add("slide-next");
+  }
 
-        next() {
-          if (this.currentIndex < this.slide.length - 1) {
-            this.goToSlide(this.currentIndex + 1);
-          } else {
-            this.goToSlide(0);
-          }
-        }
+  next() {
+    this.centerIndex = (this.centerIndex + 1) % this.totalSlides;
+    this.updateClasses();
+  }
 
-        prev() {
-          if (this.currentIndex > 0) {
-            this.goToSlide(this.currentIndex - 1);
-          } else {
-            this.goToSlide(this.slide.length - 1);
-          }
-        }
+  prev() {
+    this.centerIndex = (this.centerIndex - 1 + this.totalSlides) % this.totalSlides;
+    this.updateClasses();
+  }
 
-        addEventListeners() {
-          this.nextButton.addEventListener("click", () => this.next());
-          this.prevButton.addEventListener("click", () => this.prev());
-        }
-      }
+  addEventListeners() {
+    this.nextButton.addEventListener("click", () => this.next());
+    this.prevButton.addEventListener("click", () => this.prev());
+  }
+}
 
-export { Carousel };
-
-
+document.addEventListener("DOMContentLoaded", () => {
+  new Carousel(".carrousel_container");
+});

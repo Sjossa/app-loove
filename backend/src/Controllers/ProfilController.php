@@ -11,7 +11,7 @@ class ProfilController
     {
     }
 
-    public function VerificationToken(): void
+    public function VerificationToken()
 {
     SessionManager::startSession();
     header('Content-Type: application/json');

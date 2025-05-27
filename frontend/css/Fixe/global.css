@@ -1,0 +1,24 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0f172a;
+  font-family: Arial, sans-serif;
+  color: #ffffff;
+  height: 100vh;
+  width: 100vw;
+}
+
+
+
+ul {
+  list-style: none;
+}
+
+section:not(:last-child) {
+  margin-bottom: 20px;
+}

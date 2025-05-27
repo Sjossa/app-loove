@@ -1,8 +1,24 @@
+
+
 class SimpleRouter {
   constructor() {
     this.mainElement = document.querySelector("main");
+    this.jwt = null;
 
-    this.loadComponent("header", "/components/header.html");
+    this.routes = {
+      "/": { page: "index", auth: false },
+      "/profil": { page: "profil", auth: true },
+      "/chatbot": { page: "chatbot", auth: true },
+    };
+
+    this.init();
+  }
+
+  async init() {
+    await this.loadComponent("header", "/components/header.html");
+
+    this.jwt = await this.checkJWT();
+
     this.handleRoute(location.pathname);
     this.attachLinkListeners();
 
@@ -32,29 +48,31 @@ class SimpleRouter {
     });
   }
 
- async handleRoute(path) {
-  const cleanPath = path.replace(/^\/+/, "");
+  async handleRoute(path) {
+    const cleanPath = path.replace(/^\/+/, "").split("?")[0];
+    const route = this.routes[`/${cleanPath}`] || this.routes["/"];
 
-  const jwt = await this.checkJWT();
 
-  let page;
-  let pageUrl;
 
-  if (!jwt) {
-    page = cleanPath === "" || cleanPath === "index" ? "index_off" : cleanPath;
-    pageUrl = page === "index_off" ? "pages/index_off.html" : `pages/${page}.html`;
-  } else {
-    page = cleanPath === "" || cleanPath === "index" ? "index_on" : cleanPath;
-    pageUrl = page === "index_on" ? "pages/index_on.html" : `pages/${page}.html`;
+    if (route.auth && !this.jwt) {
+      history.replaceState(null, "", "/");
+      return this.handleRoute("/");
+    }
+
+    const pageName = this.getPageName(route.page);
+    const pageUrl = `pages/${pageName}.html`;
+
+    await this.loadPage(pageUrl, pageName);
   }
 
-  // Charger la page correspondante
-  await this.loadPage(pageUrl);
-}
+  getPageName(page) {
+    if (page === "index") {
+      return this.jwt ? "match" : "index_off";
+    }
+    return page;
+  }
 
-
-
-  async loadPage(url) {
+  async loadPage(url, pageName) {
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error("Page non trouvée");
@@ -62,10 +80,9 @@ class SimpleRouter {
       const html = await response.text();
       this.mainElement.innerHTML = html;
 
-      const pageName = url.split("/").pop().replace(".html", "");
       await this.loadPageScript(pageName);
     } catch (error) {
-      this.mainElement.innerHTML = `<p>Erreur de chargement : ${error.message}</p>`;
+      this.mainElement.innerHTML = `<p>Erreur : ${error.message}</p>`;
     }
   }
 
@@ -80,64 +97,67 @@ class SimpleRouter {
       const html = await response.text();
       element.innerHTML = html;
     } catch (error) {
-      console.error(
-        `Erreur lors du chargement du composant ${selector} : ${error.message}`
-      );
+      console.error(`Erreur composant ${selector} : ${error.message}`);
     }
   }
 
   async checkJWT() {
-  try {
-    const response = await fetch("https://back.meetlink.local/profil", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const response = await fetch("https://back.meetlink.local/profil", {
+        method: "POST",
+        credentials: "include",
+      });
 
-        if (response.ok) {
-      const data = await response.json();
-      return data.jwt;
-    } else {
+      if (response.ok) {
+        const data = await response.json();
+        return data.jwt || null;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Erreur JWT :", error);
       return null;
     }
-  } catch (error) {
-    console.error("Erreur lors de la vérification du JWT :", error);
-    return null;
   }
-}
-
 
   async loadPageScript(pageName) {
     try {
       switch (pageName) {
-        case "index_off":
+        case "index_off": {
           const { Carousel } = await import("./component/carrousel.js");
-          new Carousel(".carrousel_avis");
+new Carousel(".carrousel_avis");
 
           const { Modal } = await import("./component/modal.js");
           new Modal();
           break;
+        }
 
-        case "chatbot":
+        case "chatbot": {
           const { Chatbot } = await import("./pages/chatbot.js");
           const chatbot = new Chatbot();
           chatbot.init();
           break;
+        }
 
-        case "profil":
-          const jwt = await this.checkJWT();
-          if (jwt) {
-            const { Profil } = await import("./pages/profil.js");
-            new Profil(jwt);
-          } else {
-            console.warn("JWT non trouvé, redirection ou message à prévoir.");
-          }
+        case "profil": {
+          const { Profil } = await import("./pages/profil.js");
+          new Profil(this.jwt);
+          break;
+        }
+
+        case "match": {
+        const { match } = await import("./pages/match.js");
+new match(this.jwt);
+
           break;
 
+        }
+
         default:
-          console.warn(`Aucun script associé à la page : ${pageName}`);
+          console.warn(`Aucun script pour la page : ${pageName}`);
       }
     } catch (error) {
-      console.error("Erreur lors du chargement du script :", error);
+      console.error("Erreur chargement script :", error);
     }
   }
 }

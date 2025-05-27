@@ -1,25 +1,29 @@
 class Chatbot {
   constructor() {
     this.questions = [
-      { key: "prenom", text: "Quelle est votre prénom ?" },
-      { key: "nom", text: "Quel est votre nom de famille ?" },
-      { key: "age", text: "Quel âge avez-vous ?" },
-      { key: "email", text: "Quelle est votre adresse mail ?" },
-      { key: "password", text: "Quel sera votre mot de passe ?" },
-      { key: "role", text: "Pourquoi êtes-vous ici ?" },
-      {
-        key: "profile_picture",
-        text: "Veuillez choisir une photo de profil (de préférence vous).",
-      },
+      { key: "prenom", text: "Quel est ton prénom ?" },
+      { key: "nom", text: "Et ton nom de famille ?" },
+
+      { key: "age", text: "Quel âge as-tu ?" },
+      { key: "localisation", text: "Où habites-tu (ville) ?" },
+      { key: "email", text: "Quelle est ton adresse mail ?" },
+      { key: "password", text: "Choisis un mot de passe sécurisé." },
+      { key: "statut", text: "Quel est ton statut sentimental ?" },
+      { key: "orientation", text: "Quelle est ton orientation ?" },
+      { key: "relation_recherchee", text: "Quel type de relation cherches-tu ?" },
+      { key: "interets", text: "Parle-moi de tes centres d’intérêt ou passions." },
+      { key: "bio", text: "Une petite bio pour te présenter ?" },
+      { key: "petit_plus", text: "Un petit plus ou fun fact à partager ?" },
+      { key: "profile_picture", text: "Choisis une photo de profil sympa !" }
     ];
 
     this.messages = {
-      intro: "Bonjour, je suis MCLink, votre compagnon pour l'inscription.",
-      end: "Merci pour vos réponses !",
+      intro: "👋 Salut, je suis MCLink, ton compagnon pour créer ton profil. Prêt(e) ? C’est parti !",
+      end: "🎉 Merci ! Ton profil est prêt à être sauvegardé.",
       errors: {
-        email: "Erreur : veuillez entrer une adresse mail valide.",
-        age: "Erreur : vous devez avoir au moins 15 ans.",
-        upload: "Erreur lors de l'upload de l'image.",
+        email: "❌ Adresse email invalide.",
+        age: "❌ Tu dois avoir au moins 15 ans.",
+        upload: "❌ Problème lors de l’envoi de la photo.",
       },
     };
 
@@ -34,13 +38,10 @@ class Chatbot {
 
   init() {
     this.chatZone.innerHTML = this.messages.intro;
-
     this.btnNext.addEventListener("click", () => this.Next_Question());
     this.btnPrev.addEventListener("click", () => this.Prev_Question());
 
-    setTimeout(() => {
-      this.displayQuestion();
-    }, 1000);
+    setTimeout(() => this.displayQuestion(), 1000);
   }
 
   displayQuestion() {
@@ -82,7 +83,6 @@ class Chatbot {
     }
 
     this.index++;
-
     if (this.index < this.questions.length) {
       this.displayQuestion();
     } else {
@@ -94,10 +94,7 @@ class Chatbot {
     if (this.index > 0) {
       this.index--;
       this.displayQuestion();
-
-      if (this.btnNext.disabled) {
-        this.btnNext.disabled = false;
-      }
+      if (this.btnNext.disabled) this.btnNext.disabled = false;
     }
   }
 
@@ -128,8 +125,6 @@ class Chatbot {
 
           const data = await res.json();
           this.responses["profile_picture"] = data.path;
-
-          console.log("Image uploadée :", data.path);
         } catch (error) {
           console.error("Erreur upload image :", error);
           this.chatZone.innerHTML += `<br>${this.messages.errors.upload}`;
@@ -142,25 +137,21 @@ class Chatbot {
     this.chatZone.innerHTML = this.messages.end;
     this.btnNext.disabled = true;
 
-    console.log("Réponses collectées :", this.responses);
+    console.log("Profil collecté :", this.responses);
 
     fetch("https://back.meetlink.local/users/create", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(this.responses),
     })
       .then((res) => res.json())
       .then((result) => {
         console.log("Réponse API :", result);
-        this.chatZone.innerHTML +=
-          "<br>Vos informations ont été envoyées avec succès.";
+        this.chatZone.innerHTML += "<br>📬 Ton profil a été enregistré avec succès !";
       })
       .catch((err) => {
-        console.error("Erreur envoi final :", err);
-        this.chatZone.innerHTML +=
-          "<br>Une erreur est survenue lors de l'envoi.";
+        console.error("Erreur finale :", err);
+        this.chatZone.innerHTML += "<br>⚠️ Une erreur est survenue à l’envoi.";
       });
   }
 }

@@ -1,59 +1,52 @@
 <section id="profil_page">
+  <button id="Modifier">Modifier</button>
   <div id="profil_info">
     <div>
-    <img data-user="profile_picture"/>
-</div>
-
+      <img data-user="profile_picture" />
+    </div>
 
     <div id="info_base">
-      <h1 data-user="nom"></h1>
-      <h2 data-user="age"></h2>
-      <h3>"Je code avec le cœur, et parfois en dark mode."</h3>
+      <h1>
+        <input type="text" data-user="prenom"  />
+        <input type="text" data-user="nom" placeholder="Nom" />
+      </h1>
+      <h2>
+        <input type="number" data-user="age" placeholder="Âge" />
+      </h2>
+      <h3>
+        <input type="text" value="Je code avec le cœur, et parfois en dark mode." disabled />
+      </h3>
 
       <div id="info_secondaire">
         <div id="info_perso">
           <h4>👤 Infos personnelles</h4>
           <ul>
-            <li><strong>Localisation :</strong> <span data-user="localisation"></span></li>
-
-            <li><strong>Statut :</strong> Célibataire passionné(e) de code</li>
-            <li><strong>Orientation :</strong> Hétérosexuel(le)</li>
-            <li>
-              <strong>Relation recherchée :</strong> Sérieuse (et full
-              responsive)
-            </li>
+            <li><strong>Localisation :</strong> <input type="text" data-user="localisation" placeholder="Localisation" /></li>
+            <li><strong>Statut :</strong> <input type="text" data-user="statut" placeholder="Statut" /></li>
+            <li><strong>Orientation :</strong> <input type="text" data-user="orientation" placeholder="Orientation" /></li>
+            <li><strong>Relation recherchée :</strong> <input type="text" data-user="relation_recherchee" placeholder="Relation recherchée" /></li>
           </ul>
         </div>
 
         <div id="info_aime">
           <h4>💻 Centres d’intérêt</h4>
           <ul>
-            <li>📚 Les cafés code en binôme</li>
-            <li>🎮 Les soirées Codage + Mario Kart</li>
-            <li>
-              🧠 Faire de la veille techno ensemble avec un chocolat chaud
-            </li>
+            <li><input type="text" value="📚 Les cafés code en binôme" disabled /></li>
+            <li><input type="text" value="🎮 Les soirées Codage + Mario Kart" disabled /></li>
+            <li><input type="text" value="🧠 Faire de la veille techno ensemble avec un chocolat chaud" disabled /></li>
           </ul>
         </div>
-
       </div>
 
-<div id="profil_bio">
+      <div id="profil_bio">
         <div id="bio">
           <h4>💌 Bio</h4>
-          <p>
-            Passionné par le code... et par les vraies connexions. Si tu aimes
-            les soirées sous un plaid à refaire le monde (et un peu de
-            JavaScript), on devrait bien s'entendre.
-          </p>
+          <textarea data-user="bio" placeholder="Écris ta bio..."></textarea>
         </div>
 
         <div id="extra_info">
           <h4>💖 Petit plus</h4>
-          <p>
-            J’offre toujours le dernier cookie. Et je peux t’aider à débugger
-            ton cœur si besoin.
-          </p>
+          <textarea data-user="petit_plus" placeholder="Un petit plus à savoir..."></textarea>
         </div>
       </div>
     </div>

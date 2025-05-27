@@ -8,6 +8,7 @@ use backend\Core\Router;
 use backend\Controllers\UserController;
 use backend\Controllers\UploadController;
 use backend\Controllers\ProfilController;
+use backend\Controllers\MatchController;
 
 use backend\Core\Jeton;
 use Dotenv\Dotenv;
@@ -62,6 +63,7 @@ try {
         $router->post('/create', [$userController, 'create']);
         $router->post('/login', [$userController, 'login']);
         $router->post('/profil', [$userController, 'profil']);
+        $router->post('/update', [$userController, 'update']);
     });
 
     // Groupe : /upload
@@ -74,6 +76,13 @@ try {
     $router->group('/profil', function($router) {
         $profil = new ProfilController();
         $router->post('', [$profil, 'VerificationToken']);
+    });
+
+
+    //Froupe : /Match
+    $router->group('/match', function($router) use ($database) {
+      $matchController = new MatchController($database);
+      $router -> post('', [$matchController,'profilGenerate']);
     });
 
     $router->run();
