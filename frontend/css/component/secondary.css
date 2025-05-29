@@ -339,3 +339,11 @@
   font-size: 32px;
   cursor: pointer;
 }
+
+
+/*messagerie*/
+
+.messagerie{
+  display: grid;
+  grid-template-columns: 1FR 1FR;
+}

@@ -3,12 +3,15 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+
 use backend\config\Database;
 use backend\Core\Router;
 use backend\Controllers\UserController;
 use backend\Controllers\UploadController;
 use backend\Controllers\ProfilController;
 use backend\Controllers\MatchController;
+use backend\Controllers\TchatController;
+
 
 use backend\Core\Jeton;
 use Dotenv\Dotenv;
@@ -87,6 +90,13 @@ try {
       $router -> post('dislike' ,[$matchController,'dislike']);
 
     });
+
+    //groupe : /tchat
+    $router->group('/tchat', function($router) use ($database) {
+        $tchat = new TchatController($database);
+        $router->post('list', [$tchat, 'Tchat_List']);
+    });
+
 
     $router->run();
 

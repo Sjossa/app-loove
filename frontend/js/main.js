@@ -154,6 +154,14 @@ new Match(this.jwt);
 
         }
 
+        case "tchat": {
+        const { Tchat } = await import("./pages/tchat.js");
+        new Tchat(this.jwt);
+
+        break;
+
+        }
+
         default:
           console.warn(`Aucun script pour la page : ${pageName}`);
       }

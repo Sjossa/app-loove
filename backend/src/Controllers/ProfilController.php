@@ -39,11 +39,11 @@ class ProfilController
             throw new \Exception("Jeton expiré");
         }
 
-        // Retourne le jeton validé dans la réponse
+
         echo json_encode([
             "success" => true,
             "message" => "Jeton valide",
-            "jwt" => $jwt // Ajout du JWT dans la réponse
+            "jwt" => $jwt
         ]);
 
     } catch (\Exception $e) {
