@@ -83,6 +83,9 @@ try {
     $router->group('/match', function($router) use ($database) {
       $matchController = new MatchController($database);
       $router -> post('', [$matchController,'profilGenerate']);
+      $router -> post('like' ,[$matchController,'like']);
+      $router -> post('dislike' ,[$matchController,'dislike']);
+
     });
 
     $router->run();

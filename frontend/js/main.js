@@ -8,7 +8,8 @@ class SimpleRouter {
     this.routes = {
       "/": { page: "index", auth: false },
       "/profil": { page: "profil", auth: true },
-      "/chatbot": { page: "chatbot", auth: true },
+      "/chatbot": { page: "chatbot", auth: false },
+      "/tchat": { page: "tchat", auth: false },
     };
 
     this.init();
@@ -146,8 +147,8 @@ new Carousel(".carrousel_avis");
         }
 
         case "match": {
-        const { match } = await import("./pages/match.js");
-new match(this.jwt);
+        const { Match } = await import("./pages/match.js");
+new Match(this.jwt);
 
           break;
 
