@@ -96,7 +96,7 @@ class UserController
         if ($user && password_verify($password, $user['password'])) {
             $payload = [
                 "iat" => time(),
-                "exp" => time() + 3600,
+                "exp" => time() + 86400,
                 "id" => $user['id'],
                 "email" => $email
             ];

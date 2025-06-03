@@ -345,5 +345,23 @@
 
 .messagerie{
   display: grid;
-  grid-template-columns: 1FR 1FR;
+  grid-template-columns: 0.3FR 1FR;
+  height: 100vh;
+}
+
+
+
+.conversation{
+  display: flex;
+  flex-direction: column;
+  background-color: #d49e5a;
+  flex: 1;
+}
+
+.header_conversation{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #131314;
+  color: red;
 }
