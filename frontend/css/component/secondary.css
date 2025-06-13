@@ -73,7 +73,13 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   border-radius: 12px;
-  margin: 10px 20px;
+  margin: 10px 10px;
+}
+
+#profil_page input{
+  /* background-color: transparent; */
+  font-size: 3rem;
+  border: none;
 }
 
 #profil_info {
@@ -186,7 +192,7 @@
 
 /* card */
 
-/* === CONTAINER PRINCIPAL === */
+/* === CONTAINER match === */
 #match {
   display: flex;
   flex-direction: column;

@@ -67,28 +67,26 @@ class Tchat
         $stmt2->execute();
 
         $conversationID = $this->db->lastInsertId();
-      }else{
+      } else {
 
         $conversationID = $conversations[0]['id'];
       }
 
-        $stmt3 = $this->db->prepare("SELECT * FROM messages WHERE conversation_id = :conversationID ORDER BY created_at ASC");
-        $stmt3->bindParam(':conversationID', $conversationID, PDO::PARAM_INT);
-        $stmt3->execute();
-        $message = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+      $stmt3 = $this->db->prepare("SELECT * FROM messages WHERE conversation_id = :conversationID ORDER BY created_at ASC");
+      $stmt3->bindParam(':conversationID', $conversationID, PDO::PARAM_INT);
+      $stmt3->execute();
+      $message = $stmt3->fetchAll(PDO::FETCH_ASSOC);
 
-        return [
-  "conversation_id" => $conversationID,
-  "messages" => $message,
-  "participants" => [
-    "user1_id" => $currentUserId,
-    "user2_id" => $matchID
-  ],
-  "message_count" => count($message),
-  "last_message" => end($message) ?: null,
-];
-
-
+      return [
+        "conversation_id" => $conversationID,
+        "messages" => $message,
+        "participants" => [
+          "user1_id" => $currentUserId,
+          "user2_id" => $matchID
+        ],
+        "message_count" => count($message),
+        "last_message" => end($message) ?: null,
+      ];
     } catch (PDOException $e) {
       error_log("Erreur dans l'envoie du message : " . $e->getMessage());
       return null;

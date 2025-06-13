@@ -1,37 +1,50 @@
-<section id="match">
-  <div id="card">
+<section id="match" aria-label="Profil à matcher">
+  <div class="card">
+    <img
+      src="../images/amadou.jpg"
+      alt="Photo de profil d'Amadou"
+      class="card__image"
+    />
 
-    <img src="../images/amadou.jpg" alt="Photo de profil">
-
-    <div id="card_info_base">
-
-      <div id="card_info_un">
-        <p data-user="prenom"></p>
-        <p data-user="age">23 ans</p>
+    <div class="card__info-base">
+      <div class="card__info-un">
+        <p data-user="prenom" class="user-prenom">Prénom</p>
+        <p data-user="age" class="user-age">23 ans</p>
       </div>
 
-      <div id="localisation">
-        <img src="../images/marqueur.png" alt="Localisation">
-        <p><span data-user="localisation">ddddd</span></p>
+      <div class="localisation">
+        <img
+          src="../images/marqueur.png"
+          alt="Icône localisation"
+          class="localisation__icon"
+        />
+        <p>
+          <span data-user="localisation" class="user-localisation"
+            >Ville, Pays</span
+          >
+        </p>
       </div>
 
-      <button id="btn_profil">⬆</button>
+      <button
+        id="btn-profil"
+        aria-expanded="false"
+        aria-controls="match-profil"
+        aria-label="Afficher la bio du profil"
+      >
+        ⬆
+      </button>
 
-      <div id="match_profil" class="match_profil">
-        <div id="bio_profil">
-          <p>ma bio</p>
-          <p data-user="bio">e</p>
+      <div id="match-profil" class="match-profil" hidden>
+        <div id="bio-profil">
+          <p>Ma bio :</p>
+          <p data-user="bio" class="user-bio">Aucune bio renseignée.</p>
         </div>
       </div>
-
     </div>
-
-
   </div>
 
   <div id="choix">
-      <button class="skip">❌</button>
-      <button class="matchbtn" >❤️</button>
-
-    </div>
+    <button class="skip" aria-label="Passer ce profil">❌</button>
+    <button class="matchbtn" aria-label="J'aime ce profil">❤️</button>
+  </div>
 </section>

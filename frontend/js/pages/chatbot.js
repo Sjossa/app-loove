@@ -1,7 +1,7 @@
 class Chatbot {
   constructor() {
     this.questions = [
-      { key: "prenom", text: "Quel est ton prénom ?" },
+      { key: "prenom", text: "Quel est votre prénom ?" },
       { key: "nom", text: "Et ton nom de famille ?" },
 
       { key: "age", text: "Quel âge as-tu ?" },
@@ -10,15 +10,22 @@ class Chatbot {
       { key: "password", text: "Choisis un mot de passe sécurisé." },
       { key: "statut", text: "Quel est ton statut sentimental ?" },
       { key: "orientation", text: "Quelle est ton orientation ?" },
-      { key: "relation_recherchee", text: "Quel type de relation cherches-tu ?" },
-      { key: "interets", text: "Parle-moi de tes centres d’intérêt ou passions." },
+      {
+        key: "relation_recherchee",
+        text: "Quel type de relation cherches-tu ?",
+      },
+      {
+        key: "interets",
+        text: "Parle-moi de tes centres d’intérêt ou passions.",
+      },
       { key: "bio", text: "Une petite bio pour te présenter ?" },
       { key: "petit_plus", text: "Un petit plus ou fun fact à partager ?" },
-      { key: "profile_picture", text: "Choisis une photo de profil sympa !" }
+      { key: "profile_picture", text: "Choisis une photo de profil sympa !" },
     ];
 
     this.messages = {
-      intro: "👋 Salut, je suis MCLink, ton compagnon pour créer ton profil. Prêt(e) ? C’est parti !",
+      intro:
+        "Salut, je suis MCLink. Prêt(e) à créer ton profil ?",
       end: "🎉 Merci ! Ton profil est prêt à être sauvegardé.",
       errors: {
         email: "❌ Adresse email invalide.",
@@ -38,6 +45,8 @@ class Chatbot {
 
   init() {
     this.chatZone.innerHTML = this.messages.intro;
+    this.input.style.display = "none";
+
     this.btnNext.addEventListener("click", () => this.Next_Question());
     this.btnPrev.addEventListener("click", () => this.Prev_Question());
 
@@ -147,7 +156,8 @@ class Chatbot {
       .then((res) => res.json())
       .then((result) => {
         console.log("Réponse API :", result);
-        this.chatZone.innerHTML += "<br>📬 Ton profil a été enregistré avec succès !";
+        this.chatZone.innerHTML +=
+          "<br>📬 Ton profil a été enregistré avec succès !";
       })
       .catch((err) => {
         console.error("Erreur finale :", err);

@@ -4,11 +4,13 @@ export class Tchat {
 
     this.messagerie = document.querySelector(".messagerie");
     this.close = document.querySelector(".close");
-    this.liste_contenue = document.querySelector(".liste_contenue");
+    this.liste_contenue = document.querySelector(".liste-contenu");
     this.send_button = document.querySelector(".send");
 
-    this.liste_message = document.querySelector(".liste_message");
-    this.list_match = document.querySelector(".list_match");
+    this.liste_message = document.querySelector(".liste-message");
+    this.list_match = document.querySelector(".list-match");
+
+    this.refresh = null;
 
     this.fermeture();
     this.liste();
@@ -78,6 +80,11 @@ export class Tchat {
   async conversation(matchID) {
     if (!this.liste_message) return;
 
+    this.liste_message.innerHTML = "";
+    if (this.refresh) {
+      clearInterval(this.refresh);
+    }
+
     try {
       const response = await fetch(
         "https://back.meetlink.local/tchat/conversation",
@@ -93,19 +100,25 @@ export class Tchat {
       );
 
       const data = await response.json();
-      console.log(data);
+      console.log("Conversation reçue :", data);
 
-      console.log("Conversation reçue :", data.conversation.conversation_id);
+      if (data) {
+        if (!this.send_button) {
+          console.log("Le bouton envoyer n'existe pas");
+        } else {
+          this.send_button.onclick = () => {
+            const message_value = document.querySelector(".message-input").value;
+            this.send(
+              message_value,
+              matchID,
+              data.conversation.conversation_id
+            );
+          };
+        }
 
+        this.reload(data);
 
-
-      if (!this.send_button) {
-        console.log("Le button envoyer n'existe pas");
-      } else {
-        this.send_button.addEventListener("click", () => {
-          this.message_value = document.querySelector(".message2").value;
-          this.send(this.message_value,matchID,data.conversation.conversation_id);
-        });
+        this.startRefresh(matchID, data.conversation.conversation_id);
       }
     } catch (error) {
       console.error(
@@ -115,7 +128,7 @@ export class Tchat {
     }
   }
 
-  async send(message,matchID,conversationID) {
+  async send(message, matchID, conversationID) {
     try {
       const response = await fetch("https://back.meetlink.local/tchat/send", {
         method: "POST",
@@ -124,7 +137,7 @@ export class Tchat {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ message , matchID , conversationID }),
+        body: JSON.stringify({ message, matchID, conversationID }),
       });
 
       const data = await response.json();
@@ -132,5 +145,58 @@ export class Tchat {
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
     }
+  }
+
+  reload(data) {
+    if (
+      data &&
+      data.conversation.conversation_id > 0 &&
+      Array.isArray(data.conversation.messages)
+    ) {
+      data.conversation.messages.forEach((msg) => {
+        const exists = this.liste_message.querySelector(
+          `li[data-id="${msg.id}"]`
+        );
+        if (!exists) {
+          const li = document.createElement("li");
+          li.textContent = msg.content;
+          li.dataset.id = msg.id;
+          li.classList.add("match");
+          this.liste_message.appendChild(li);
+        }
+      });
+
+      this.liste_message.scrollTop = this.liste_message.scrollHeight;
+    }
+  }
+
+  startRefresh(matchID, conversationID) {
+    if (this.refresh) {
+      clearInterval(this.refresh);
+    }
+
+    this.refresh = setInterval(async () => {
+      try {
+        const response = await fetch(
+          "https://back.meetlink.local/tchat/conversation",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${this.jwt}`,
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ matchID }),
+          }
+        );
+
+        const data = await response.json();
+        if (data) {
+          this.reload(data);
+        }
+      } catch (error) {
+        console.error("Erreur lors du refresh auto :", error);
+      }
+    }, 2000);
   }
 }
