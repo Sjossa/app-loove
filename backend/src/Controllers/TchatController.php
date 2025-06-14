@@ -117,11 +117,12 @@ class TchatController
       $send = $this->Tchat->message($currentUserId, $matchID, $message, $conversationID);
 
       if ($send) {
-        echo json_encode([
+
+        
 
 
-          "send" => "message envoyé"
-        ]);
+
+        echo json_encode(["send" => "message envoyé"]);
       } else {
         echo json_encode([
           "status" => "empty",
@@ -135,6 +136,4 @@ class TchatController
       ]);
     }
   }
-
-
 }

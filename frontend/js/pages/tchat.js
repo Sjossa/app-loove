@@ -1,6 +1,30 @@
 export class Tchat {
   constructor(jwt) {
     this.jwt = jwt;
+    this.socket = new WebSocket("ws://localhost:8080");
+
+    this.socket.onopen = () => {
+      console.log("WebSocket connecté");
+    };
+
+    this.socket.onerror = (error) => {
+      console.error("Erreur WebSocket :", error);
+    };
+
+    this.socket.onclose = (event) => {
+      console.log("WebSocket fermé", event);
+    };
+
+    this.socket.onmessage = (event) => {
+      console.log("Message WebSocket reçu :", event.data);
+      const data = JSON.parse(event.data);
+      this.messag({
+        conversation: {
+          conversation_id: data.conversationID,
+          messages: [data],
+        },
+      });
+    };
 
     this.messagerie = document.querySelector(".messagerie");
     this.close = document.querySelector(".close");
@@ -10,12 +34,11 @@ export class Tchat {
     this.liste_message = document.querySelector(".liste-message");
     this.list_match = document.querySelector(".list-match");
 
-    this.refresh = null;
-
     this.fermeture();
     this.liste();
   }
 
+  // Gestion de l'affichage de la liste des conversations
   fermeture() {
     if (this.liste_contenue && this.close) {
       this.close.addEventListener("click", () => {
@@ -30,6 +53,7 @@ export class Tchat {
     }
   }
 
+  // Chargement de la liste des matches/conversations
   async liste() {
     if (!this.list_match) {
       alert("La liste n'existe pas");
@@ -77,13 +101,11 @@ export class Tchat {
     }
   }
 
+  // Récupération et affichage d'une conversation spécifique
   async conversation(matchID) {
     if (!this.liste_message) return;
 
     this.liste_message.innerHTML = "";
-    if (this.refresh) {
-      clearInterval(this.refresh);
-    }
 
     try {
       const response = await fetch(
@@ -100,25 +122,28 @@ export class Tchat {
       );
 
       const data = await response.json();
-      console.log("Conversation reçue :", data);
 
       if (data) {
         if (!this.send_button) {
           console.log("Le bouton envoyer n'existe pas");
         } else {
           this.send_button.onclick = () => {
-            const message_value = document.querySelector(".message-input").value;
-            this.send(
-              message_value,
-              matchID,
-              data.conversation.conversation_id
-            );
+            const inputElement = document.querySelector(".message-input");
+            if (!inputElement) return;
+
+            this.message_value = inputElement.value.trim();
+
+            if (this.message_value) {
+              this.send(
+                this.message_value,
+                matchID,
+                data.conversation.conversation_id
+              );
+            }
           };
         }
 
-        this.reload(data);
-
-        this.startRefresh(matchID, data.conversation.conversation_id);
+        this.messag(data);
       }
     } catch (error) {
       console.error(
@@ -128,6 +153,7 @@ export class Tchat {
     }
   }
 
+  // Envoi d'un message
   async send(message, matchID, conversationID) {
     try {
       const response = await fetch("https://back.meetlink.local/tchat/send", {
@@ -141,26 +167,47 @@ export class Tchat {
       });
 
       const data = await response.json();
-      console.log("Message envoyé :", data);
+      console.log("Message envoyé via REST :", data);
+
+      // Envoi du même message via WebSocket
+      const messageData = {
+        conversationID: conversationID,
+        matchID: matchID,
+        content: message,
+        timestamp: Date.now(),
+      };
+
+      this.socket.send(JSON.stringify(messageData));
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
     }
   }
 
-  reload(data) {
+  // Affichage des messages dans la messagerie
+  messag(data) {
+    if (!this.liste_message) {
+      ("erreur");
+    }
+
+    console.log(data);
+
     if (
       data &&
       data.conversation.conversation_id > 0 &&
       Array.isArray(data.conversation.messages)
     ) {
       data.conversation.messages.forEach((msg) => {
+        const msgID = msg.id || msg.timestamp;
+        if (!msgID) {
+          console.log("erreur");
+        }
         const exists = this.liste_message.querySelector(
           `li[data-id="${msg.id}"]`
         );
         if (!exists) {
           const li = document.createElement("li");
-          li.textContent = msg.content;
-          li.dataset.id = msg.id;
+          li.textContent = msg.content || "";
+          li.dataset.id = msg.id || msg.timestamp;
           li.classList.add("match");
           this.liste_message.appendChild(li);
         }
@@ -168,35 +215,5 @@ export class Tchat {
 
       this.liste_message.scrollTop = this.liste_message.scrollHeight;
     }
-  }
-
-  startRefresh(matchID, conversationID) {
-    if (this.refresh) {
-      clearInterval(this.refresh);
-    }
-
-    this.refresh = setInterval(async () => {
-      try {
-        const response = await fetch(
-          "https://back.meetlink.local/tchat/conversation",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${this.jwt}`,
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({ matchID }),
-          }
-        );
-
-        const data = await response.json();
-        if (data) {
-          this.reload(data);
-        }
-      } catch (error) {
-        console.error("Erreur lors du refresh auto :", error);
-      }
-    }, 2000);
   }
 }

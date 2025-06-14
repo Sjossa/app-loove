@@ -8,7 +8,7 @@ class SimpleRouter {
       "/": { page: "index", auth: false },
       "/profil": { page: "profil", auth: true },
       "/chatbot": { page: "chatbot", auth: false },
-      "/tchat": { page: "tchat", auth: false },
+      "/tchat": { page: "tchat", auth: true },
       "/admin": { page: "admin", auth: true , roles: ["admin"]},
     };
 

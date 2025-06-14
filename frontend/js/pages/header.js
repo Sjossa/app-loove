@@ -29,13 +29,15 @@ export class headers {
     logoItem.className = "nav-item";
     logoItem.appendChild(conteneur_logo);
     this.nav.appendChild(logoItem);
-    console.log("JWT:", this.jwt);
 
     if (this.jwt) {
+
+
+
       const links = [
         { text: "Profil", href: "profil" },
         { text: "message", href: "tchat" },
-        { text: "notification" },
+
       ];
 
       links.forEach((item) => {
@@ -52,9 +54,10 @@ export class headers {
       });
 
       const notification = document.createElement("button");
-      notification.className = "notification";
-      notification.appendChild(button);
+      notification.className = "notification" ;
+      notification.textContent = "🔔";
       this.nav.appendChild(notification);
+
     } else {
       const li = document.createElement("li");
       li.className = "nav-item nav-cta";
@@ -140,8 +143,6 @@ export class headers {
 
     if (this.openBtn) {
       this.openBtn.addEventListener("click", () => this.open());
-    } else {
-      console.log("erreur");
     }
     if (this.closeBtn) {
       this.closeBtn.addEventListener("click", () => this.close());
