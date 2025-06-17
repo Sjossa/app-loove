@@ -70,7 +70,6 @@ class PaypalController
         } else {
           throw new Exception("L'abonnement n'a pas pu être enregistré.");
         }
-
       } catch (Exception $e) {
         echo json_encode(["status" => "error", "message" => $e->getMessage()]);
       }

@@ -32,12 +32,14 @@ class Profil
       $stmt->bindParam(':status', $status, PDO::PARAM_INT);
       $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
       $stmt->execute();
+
+      
     }else{
       return;
     }
   }
 
-   
+
 
 
 }

@@ -40,12 +40,18 @@ class Chat implements MessageComponentInterface
 
   public function onMessage(ConnectionInterface $from, $msg)
   {
+    
     $data = json_decode($msg, true);
+     var_dump($data);
     if ($data === null) {
       return;
     }
 
+
+
     if (!isset($data['type'])) {
+      var_dump($data);
+
 
       echo "Message reçu sans type\n";
       return;
@@ -54,7 +60,6 @@ class Chat implements MessageComponentInterface
     switch ($data['type']) {
       case 'auth':
         $token = $data['token'] ?? null;
-        echo "Token reçu: " . var_export($token, true) . "\n";
         if (!$token) {
           $from->send(json_encode(['type' => 'auth', 'success' => false, 'message' => 'Token manquant']));
           return;
@@ -95,10 +100,32 @@ class Chat implements MessageComponentInterface
         }
         break;
 
+      case 'like':
       case 'match':
-        // Gérer les notifications spéciales ici
-        // Par exemple, filtrer ou envoyer à certains clients
+        $fromUserId = $data['from_user_id'] ?? null;
+        $toUserId = $data['to_user_id'] ?? null;
+        $payload = $data['data'] ?? [];
+
+        if (!$toUserId) {
+          echo "User cible manquant pour notification $data[type]\n";
+          return;
+        }
+
+        echo "User $fromUserId a liké user $toUserId\n";
+
+        foreach ($this->clients as $client) {
+          $clientId = $client->resourceId;
+
+          if (isset($this->users[$clientId]) && $this->users[$clientId] == $toUserId) {
+            $client->send(json_encode([
+              'type' => $data['type'],
+              'data' => $payload
+            ]));
+            echo "Notification envoyée à l'utilisateur $toUserId\n";
+          }
+        }
         break;
+
 
       default:
         echo "Type de message inconnu: {$data['type']}\n";

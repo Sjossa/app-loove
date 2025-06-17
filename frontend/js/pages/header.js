@@ -20,6 +20,10 @@ export class headers {
             this.newNotif("match");
             break;
 
+            case "like":
+            this.newNotif("match");
+            break;
+
         default:
           break;
       }
@@ -174,10 +178,19 @@ export class headers {
     }
   }
 
-  newNotif(){
-    if(!this.notificationbtn) return;
+  newNotif(texte) {
+    if (!this.notificationbtn) return;
 
     this.notificationbtn.classList.add("active");
-    this.notificationbtn.tilte = texte;
+    this.notificationbtn.title = texte;
+
+    let badge = this.notificationbtn.querySelector(".notif-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "notif-badge";
+      this.notificationbtn.appendChild(badge);
+    }
+    let count = parseInt(badge.textContent) || 0;
+    badge.textContent = count + 1;
   }
 }

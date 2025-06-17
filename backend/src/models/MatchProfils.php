@@ -79,15 +79,21 @@ FROM likes
 
   public function like($liker_id, $liked_id)
   {
-
     try {
+      // 1. Insertion du like avec datetime
       $stmt = $this->db->prepare("INSERT INTO likes (liker_id, liked_id, datetime) VALUES (:liker_id, :liked_id, NOW())");
-
       $stmt->bindParam(':liker_id', $liker_id, PDO::PARAM_INT);
       $stmt->bindParam(':liked_id', $liked_id, PDO::PARAM_INT);
       $stmt->execute();
 
+      // 2. Récupération de la date du like
+      $stmtDate = $this->db->prepare("SELECT datetime FROM likes WHERE liker_id = :liker_id AND liked_id = :liked_id ORDER BY datetime DESC LIMIT 1");
+      $stmtDate->bindParam(':liker_id', $liker_id, PDO::PARAM_INT);
+      $stmtDate->bindParam(':liked_id', $liked_id, PDO::PARAM_INT);
+      $stmtDate->execute();
+      $date = $stmtDate->fetchColumn();
 
+      // 3. Vérification du match
       $stmt2 = $this->db->prepare("SELECT COUNT(*) FROM likes WHERE liker_id = :liker_id AND liked_id = :liked_id ");
       $stmt2->bindParam(':liker_id', $liker_id, PDO::PARAM_INT);
       $stmt2->bindParam(':liked_id', $liked_id, PDO::PARAM_INT);
@@ -104,14 +110,20 @@ FROM likes
         $user1 = min($liker_id, $liked_id);
         $user2 = max($liker_id, $liked_id);
 
-        $stmt4 = $this->db->prepare("INSERT INTO matchs (user1_id, user2_id) VALUES (:user1, :user2)");
+        $stmt4 = $this->db->prepare("INSERT INTO matchs (user1_id, user2_id, datetime) VALUES (:user1, :user2, NOW())");
         $stmt4->bindParam(':user1', $user1, PDO::PARAM_INT);
         $stmt4->bindParam(':user2', $user2, PDO::PARAM_INT);
         $stmt4->execute();
 
-        return "match";
+        return [
+          'type' => 'match',
+          'date' => $date
+        ];
       } else {
-        return "like";
+        return [
+          'type' => 'like',
+          'date' => $date
+        ];
       }
     } catch (PDOException $e) {
       error_log("Erreur PDO dans like(): " . $e->getMessage());
@@ -119,6 +131,7 @@ FROM likes
       exit;
     }
   }
+
 
 
   public function dislike($dislike_id, $disliked_id)
