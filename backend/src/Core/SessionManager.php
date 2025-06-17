@@ -7,7 +7,7 @@ class SessionManager
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_set_cookie_params([
-                'lifetime' => 0,
+                'lifetime' => 60 * 60 * 24 * 7,
                 'path' => '/',
                 'domain' => '.meetlink.local',
                 'secure' => true,

@@ -7,11 +7,19 @@ use PDOException;
 
 class Database
 {
-  public $host = 'localhost';
-  public $dbname = 'meetlink';
-  public $username = 'root';
-  public $password = '0000';
-  public $conn = null;
+  private $host;
+  private $dbname;
+  private $username;
+  private $password;
+  private $conn = null;
+
+  public function __construct()
+  {
+    $this->host = $_ENV["DB_HOST"];
+    $this->dbname = $_ENV["DB_NAME"];
+    $this->username = $_ENV["DB_USER"];
+    $this->password = $_ENV["DB_PASSWORD"];
+  }
 
   public function getConnection()
   {

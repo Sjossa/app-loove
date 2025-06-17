@@ -1,0 +1,31 @@
+<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+  <input type="hidden" name="cmd" value="_xclick-subscriptions">
+
+  <input type="hidden" name="business" value="meetlink@admin.com">
+
+  <input type="hidden" name="item_name" value="Abonnement Premium MeetLink">
+
+  <input type="hidden" name="currency_code" value="EUR">
+
+  <input type="hidden" name="a3" value="54.99">
+  <input type="hidden" name="image_url" value="https://meetlink.local/images/logo.png">
+
+
+  <input type="hidden" name="p3" value="1">
+  <input type="hidden" name="t3" value="M"> <!-- M = Mois -->
+
+  <!-- Paiement récurrent (1 = oui) -->
+  <input type="hidden" name="src" value="1">
+
+  <!-- ✅ Redirection si paiement réussi -->
+    <input type="hidden" name="notify_url" value="https://c299-2a01-cb00-829a-fd00-954-e4bc-6b12-6a78.ngrok-free.app/paypal/ipn">
+
+  <input type="hidden" name="return" value="https://back.meetlink.local/paypal">
+
+
+
+  <!-- ✅ Redirection si l'utilisateur annule -->
+  <input type="hidden" name="cancel_return" value="https://meetlink.local/">
+
+  <input type="submit" value="S'abonner avec PayPal">
+</form>

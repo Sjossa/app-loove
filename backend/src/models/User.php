@@ -68,35 +68,46 @@ class User
   }
 
 
+ public function connexion($email)
+{
+  try {
+    $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  public function getByEmail($email)
-  {
-    try {
-      $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+    if ($user === false) {
+      $stmt = $this->db->prepare("SELECT * FROM admin WHERE email = :email");
       $stmt->bindParam(':email', $email);
       $stmt->execute();
-      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      if ($result === false) {
-        $stmt = $this->db->prepare("SELECT * FROM admin WHERE email = :email");
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-
-        $result =  $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if($result !== false){
-          $result['role'] = 'admin';
-        return $result;
-        }
+      if ($user !== false) {
+        $user['role'] = 'admin';
       } else {
-         $result['role'] = 'user';
-
-        return $result;
+        return false;
       }
-    } catch (PDOException $e) {
-      return false;
+    } else {
+      $user['role'] = 'user';
     }
+
+    $id = $user['id'];
+
+    // Vérifie s'il existe un abonnement actif pour cet utilisateur
+    $stmt = $this->db->prepare("SELECT * FROM abonnement WHERE user_id = :user_id AND statut = 'actif'");
+    $stmt->bindParam(':user_id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $abonnement = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $user['abonnement'] = $abonnement !== false;
+
+    return $user;
+  } catch (PDOException $e) {
+    return false;
   }
+}
+
+
 
   public function getByID($id)
   {
@@ -165,4 +176,12 @@ class User
       return false;
     }
   }
+
+  public function off($userId): void
+{
+    $stmt = $this->db->prepare("UPDATE users SET is_online = 0 WHERE id = :userId AND is_online = 1");
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+    $stmt->execute();
+}
+
 }

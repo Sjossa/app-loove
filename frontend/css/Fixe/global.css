@@ -25,3 +25,13 @@ ul {
 section:not(:last-child) {
   margin-bottom: 20px;
 }
+
+.notification.active {
+  animation: blink 0.8s infinite;
+  color: red;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

@@ -1,36 +1,28 @@
+import { wsClient } from "../utils/WebSocket.js";
+
 export class Tchat {
   constructor(jwt) {
     this.jwt = jwt;
-    this.socket = new WebSocket("ws://localhost:8080");
 
-    this.socket.onopen = () => {
-      console.log("WebSocket connecté");
-    };
+    wsClient.connect(this.jwt);
 
-    this.socket.onerror = (error) => {
-      console.error("Erreur WebSocket :", error);
-    };
+    wsClient.onMessage((data) => {
 
-    this.socket.onclose = (event) => {
-      console.log("WebSocket fermé", event);
-    };
-
-    this.socket.onmessage = (event) => {
-      console.log("Message WebSocket reçu :", event.data);
-      const data = JSON.parse(event.data);
-      this.messag({
-        conversation: {
-          conversation_id: data.conversationID,
-          messages: [data],
-        },
-      });
-    };
+      const currentConvID = this.liste_message.dataset.conversationId;
+      if (data.conversationID == currentConvID) {
+        this.afficherMessages({
+          conversation: {
+            conversation_id: data.conversationID,
+            messages: [data],
+          },
+        });
+      }
+    });
 
     this.messagerie = document.querySelector(".messagerie");
     this.close = document.querySelector(".close");
     this.liste_contenue = document.querySelector(".liste-contenu");
     this.send_button = document.querySelector(".send");
-
     this.liste_message = document.querySelector(".liste-message");
     this.list_match = document.querySelector(".list-match");
 
@@ -38,7 +30,6 @@ export class Tchat {
     this.liste();
   }
 
-  // Gestion de l'affichage de la liste des conversations
   fermeture() {
     if (this.liste_contenue && this.close) {
       this.close.addEventListener("click", () => {
@@ -49,11 +40,10 @@ export class Tchat {
           : "1fr";
       });
     } else {
-      console.log("Erreur : .liste_contenue ou .close est null");
+      console.error("Erreur : .liste_contenue ou .close est null");
     }
   }
 
-  // Chargement de la liste des matches/conversations
   async liste() {
     if (!this.list_match) {
       alert("La liste n'existe pas");
@@ -101,7 +91,6 @@ export class Tchat {
     }
   }
 
-  // Récupération et affichage d'une conversation spécifique
   async conversation(matchID) {
     if (!this.liste_message) return;
 
@@ -125,25 +114,26 @@ export class Tchat {
 
       if (data) {
         if (!this.send_button) {
-          console.log("Le bouton envoyer n'existe pas");
+          console.error("Le bouton envoyer n'existe pas");
         } else {
           this.send_button.onclick = () => {
             const inputElement = document.querySelector(".message-input");
             if (!inputElement) return;
 
-            this.message_value = inputElement.value.trim();
+            const message_value = inputElement.value.trim();
 
-            if (this.message_value) {
+            if (message_value) {
               this.send(
-                this.message_value,
+                message_value,
                 matchID,
                 data.conversation.conversation_id
               );
+              inputElement.value = ""; // Vide l'input après envoi
             }
           };
         }
 
-        this.messag(data);
+        this.afficherMessages(data);
       }
     } catch (error) {
       console.error(
@@ -153,7 +143,6 @@ export class Tchat {
     }
   }
 
-  // Envoi d'un message
   async send(message, matchID, conversationID) {
     try {
       const response = await fetch("https://back.meetlink.local/tchat/send", {
@@ -167,48 +156,52 @@ export class Tchat {
       });
 
       const data = await response.json();
-      console.log("Message envoyé via REST :", data);
 
-      // Envoi du même message via WebSocket
-      const messageData = {
-        conversationID: conversationID,
-        matchID: matchID,
-        content: message,
-        timestamp: Date.now(),
-      };
-
-      this.socket.send(JSON.stringify(messageData));
+      if (data.status === "succes") {
+        const messageData = {
+          type : "message",
+          conversationID: conversationID,
+          matchID: matchID,
+          content: message,
+          timestamp: Date.now(),
+        };
+        wsClient.send(messageData)
+      } else {
+        console.warn("WebSocket n'est pas connecté.");
+      }
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
     }
   }
 
-  // Affichage des messages dans la messagerie
-  messag(data) {
+  afficherMessages(data) {
     if (!this.liste_message) {
-      ("erreur");
+      console.error("Liste des messages introuvable");
+      return;
     }
 
+    this.liste_message.dataset.conversationId = data.conversation?.conversation_id;
     console.log(data);
 
     if (
       data &&
-      data.conversation.conversation_id > 0 &&
+      data.conversation?.conversation_id > 0 &&
       Array.isArray(data.conversation.messages)
     ) {
       data.conversation.messages.forEach((msg) => {
         const msgID = msg.id || msg.timestamp;
         if (!msgID) {
-          console.log("erreur");
+          console.warn("Message sans ID");
+          return;
         }
         const exists = this.liste_message.querySelector(
-          `li[data-id="${msg.id}"]`
+          `li[data-id="${msgID}"]`
         );
         if (!exists) {
           const li = document.createElement("li");
           li.textContent = msg.content || "";
-          li.dataset.id = msg.id || msg.timestamp;
-          li.classList.add("match");
+          li.dataset.id = msgID;
+          li.classList.add("message-item");
           this.liste_message.appendChild(li);
         }
       });

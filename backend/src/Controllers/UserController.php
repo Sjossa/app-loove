@@ -4,6 +4,7 @@ namespace backend\Controllers;
 
 use backend\models\User;
 use backend\Core\SessionManager;
+use backend\Core\VerifToken;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Exception;
@@ -43,7 +44,6 @@ class UserController
       return;
     }
 
-
     $userId = $this->userModel->create(
       $data["prenom"],
       $data["nom"],
@@ -68,7 +68,6 @@ class UserController
     }
   }
 
-
   public function login(): void
   {
     header('Content-Type: application/json');
@@ -92,7 +91,7 @@ class UserController
       return;
     }
 
-    $user = $this->userModel->getByEmail($email);
+    $user = $this->userModel->connexion($email);
 
     if ($user && password_verify($password, $user['password'])) {
       $payload = [
@@ -100,7 +99,8 @@ class UserController
         "exp" => time() + 86400,
         "id" => $user['id'],
         "email" => $email,
-        "role" => $user['role']
+        "role" => $user['role'],
+        "abonnement" => $user['abonnement']
       ];
 
       $jwt = JWT::encode($payload, $key, 'HS256');
@@ -110,7 +110,9 @@ class UserController
         "success" => true,
         "message" => "Connexion réussie",
         "id" => $user['id'],
-        "session_id" => session_id()
+        "session_id" => session_id(),
+        "abonnement" => $user['abonnement'],
+        "token" => $jwt
       ]);
     } else {
       http_response_code(401);
@@ -159,16 +161,46 @@ class UserController
     }
   }
 
-  public function update()
+  public function deconnexion(): void
   {
+    header('Content-Type: application/json');
+    SessionManager::startSession();
+
+    try {
+      $userId = VerifToken::verifyToken();
+    } catch (Exception $e) {
+      http_response_code(401);
+      echo json_encode(["success" => false, "message" => $e->getMessage()]);
+      return;
+    }
+
+    $this->userModel->off($userId);
+
+    if (ini_get("session.use_cookies")) {
+      $params = session_get_cookie_params();
+      setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+    }
+
+    $_SESSION = [];
+    session_destroy();
+
+    echo json_encode(["success" => true, "message" => "Déconnexion réussie"]);
+  }
+
+  public function update(): void
+  {
+    header('Content-Type: application/json');
     SessionManager::startSession();
 
     $data = json_decode(file_get_contents("php://input"), true);
-    $jwt = $_SESSION['jwt'];
-    $key = $_ENV['JWT_SECRET'] ?? '';
-    $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
 
-    $id = $decoded->id;
+    try {
+      $id = VerifToken::verifyToken();
+    } catch (Exception $e) {
+      http_response_code(401);
+      echo json_encode(["success" => false, "message" => "Jeton invalide ou expiré"]);
+      return;
+    }
 
     $userupdate = $this->userModel->update(
       $id,

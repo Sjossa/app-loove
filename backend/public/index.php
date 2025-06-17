@@ -11,9 +11,9 @@ use backend\Controllers\UploadController;
 use backend\Controllers\ProfilController;
 use backend\Controllers\MatchController;
 use backend\Controllers\TchatController;
+use backend\Controllers\PaypalController;
 
 
-use backend\Core\Jeton;
 use Dotenv\Dotenv;
 
 // -----------------------------
@@ -67,6 +67,8 @@ try {
     $router->post('/login', [$userController, 'login']);
     $router->post('/profil', [$userController, 'profil']);
     $router->post('/update', [$userController, 'update']);
+    $router->post('/deconnexion', [$userController, 'deconnexion']);
+
   });
 
   // Groupe : /upload
@@ -88,6 +90,9 @@ try {
     $router->post('', [$matchController, 'profilGenerate']);
     $router->post('like', [$matchController, 'like']);
     $router->post('dislike', [$matchController, 'dislike']);
+    $router->post('likeWait', [$matchController, 'likeWait']);
+
+
   });
 
   //groupe : /tchat
@@ -98,6 +103,11 @@ try {
     $router->post("send", [$tchat, "send"]);
   });
 
+  //groupe : /paypal
+  $router->group('/paypal',function ($router) use ($database){
+    $paypal = new PaypalController($database);
+    $router->post('ipn',[$paypal,'ipn']);
+  });
 
   $router->run();
 } catch (Exception $e) {

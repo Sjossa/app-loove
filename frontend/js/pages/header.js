@@ -1,6 +1,30 @@
+import { wsClient } from "../utils/WebSocket.js";
+
 export class headers {
   constructor(jwt) {
+
     this.jwt = jwt;
+
+
+    wsClient.connect(this.jwt);
+    wsClient.onMessage((data) => {
+      if (!data?.type) return;
+
+      switch (data.type) {
+        case "message":
+          this.newNotif("nouveau message");
+
+          break;
+
+          case "match":
+            this.newNotif("match");
+            break;
+
+        default:
+          break;
+      }
+    });
+
     this.nav = document.querySelector(".nav-list");
     this.modal = document.getElementById("login-modal");
     this.closeBtn = this.modal.querySelector(".modal-close");
@@ -31,13 +55,10 @@ export class headers {
     this.nav.appendChild(logoItem);
 
     if (this.jwt) {
-
-
-
       const links = [
         { text: "Profil", href: "profil" },
         { text: "message", href: "tchat" },
-
+        { text: "match_liste", href: "match_liste" },
       ];
 
       links.forEach((item) => {
@@ -54,10 +75,10 @@ export class headers {
       });
 
       const notification = document.createElement("button");
-      notification.className = "notification" ;
+      notification.className = "notification";
       notification.textContent = "🔔";
       this.nav.appendChild(notification);
-
+      this.notificationbtn = notification;
     } else {
       const li = document.createElement("li");
       li.className = "nav-item nav-cta";
@@ -100,7 +121,8 @@ export class headers {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          window.location.href = "match";
+          window.location.href = "/match";
+
           this.close();
         } else {
           this.showMessage(
@@ -108,7 +130,7 @@ export class headers {
             "error"
           );
         }
-      })
+       })
       .catch((error) => {
         console.error("Erreur lors de l'envoi :", error);
         this.showMessage(
@@ -150,5 +172,12 @@ export class headers {
     if (this.form) {
       this.form.addEventListener("submit", (event) => this.send(event));
     }
+  }
+
+  newNotif(){
+    if(!this.notificationbtn) return;
+
+    this.notificationbtn.classList.add("active");
+    this.notificationbtn.tilte = texte;
   }
 }

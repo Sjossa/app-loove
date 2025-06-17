@@ -1,17 +1,14 @@
 <?php
 
-
-// src/core/Router.php
 namespace backend\core;
 
 class Router
 {
   private $url;
   private $routes = [];
-
   private $database;
 
-  public function __construct($url,$database)
+  public function __construct($url, $database)
   {
     $this->url = $url;
     $this->database = $database;
@@ -19,69 +16,66 @@ class Router
 
   public function group(string $prefix, callable $callback)
   {
-    $groupRouter = new class ($this, $prefix) {
-      private $router;
-      private $prefix;
-
-      public function __construct($router, $prefix)
-      {
-        $this->router = $router;
-        $this->prefix = trim($prefix, '/');
-      }
-
-      public function get($path, $callable)
-      {
-        $fullPath = '/' . $this->prefix . '/' . trim($path, '/');
-        return $this->router->get($fullPath, $callable);
-      }
-
-      public function post($path, $callable)
-      {
-        $fullPath = '/' . $this->prefix . '/' . trim($path, '/');
-        return $this->router->post($fullPath, $callable);
-      }
-    };
-
+    $groupRouter = new GroupRouter($this, $prefix);
     $callback($groupRouter);
   }
 
-  // Méthode pour définir une route GET
-  public function get($path, $callable)
+  // Méthodes HTTP
+  public function get(string $path, $callable)    { return $this->add('GET', $path, $callable); }
+  public function post(string $path, $callable)   { return $this->add('POST', $path, $callable); }
+  public function put(string $path, $callable)    { return $this->add('PUT', $path, $callable); }
+  public function delete(string $path, $callable) { return $this->add('DELETE', $path, $callable); }
+  public function patch(string $path, $callable)  { return $this->add('PATCH', $path, $callable); }
+
+  private function add(string $method, string $path, $callable)
   {
     $route = new Route($path, $callable);
-    $this->routes["GET"][] = $route;
+    $this->routes[$method][] = $route;
     return $route;
   }
 
-  // Méthode pour définir une route POST
-  public function post($path, $callable)
-  {
-    $route = new Route($path, $callable);
-    $this->routes["POST"][] = $route;
-    return $route;
-  }
-
-  // Méthode pour exécuter la route correspondant à la requête
   public function run()
   {
     $url = $_SERVER['REQUEST_URI'];
-    $url = str_replace('/public', '', $url); // On enlève le /public si nécessaire
+    $url = str_replace('/public', '', $url);
     $url = parse_url($url, PHP_URL_PATH);
-error_log("METHOD: " . $_SERVER['REQUEST_METHOD']);
+    $method = $_SERVER['REQUEST_METHOD'];
 
-    // Vérifie si la méthode de la requête existe pour cette route
-    if (!isset($this->routes[$_SERVER['REQUEST_METHOD']])) {
-      throw new \Exception('METHOD does not exist'); // Utilise \Exception pour la classe globale
+    if (!isset($this->routes[$method])) {
+      throw new \Exception("Méthode HTTP non prise en charge");
     }
 
-    foreach ($this->routes[$_SERVER['REQUEST_METHOD']] as $route) {
+    foreach ($this->routes[$method] as $route) {
       if ($route->match($url)) {
         return $route->call();
       }
     }
 
-    throw new \Exception('No matching routes'); // Si aucune route ne correspond
+    throw new \Exception("Aucune route ne correspond à l'URL : $url");
   }
+}
+
+class GroupRouter
+{
+  private $router;
+  private $prefix;
+
+  public function __construct($router, $prefix)
+  {
+    $this->router = $router;
+    $this->prefix = trim($prefix, '/');
+  }
+
+  private function formatPath(string $path): string
+  {
+    return '/' . trim($this->prefix . '/' . trim($path, '/'), '/');
+  }
+
+  public function get($path, $callable)    { return $this->router->get($this->formatPath($path), $callable); }
+  public function post($path, $callable)   { return $this->router->post($this->formatPath($path), $callable); }
+  public function put($path, $callable)    { return $this->router->put($this->formatPath($path), $callable); }
+  public function delete($path, $callable) { return $this->router->delete($this->formatPath($path), $callable); }
+  public function patch($path, $callable)  { return $this->router->patch($this->formatPath($path), $callable); }
 }
 
 class Route
@@ -90,17 +84,17 @@ class Route
   private $callable;
   private $matches = [];
 
-  public function __construct($path, $callable)
+  public function __construct(string $path, $callable)
   {
     $this->path = trim($path, '/');
     $this->callable = $callable;
   }
 
-  public function match($url)
+  public function match(string $url): bool
   {
     $url = trim($url, '/');
-    $path = preg_replace('#:([\w]+)#', '([^/]+)', $this->path);
-    $regex = "#^$path$#i";
+    $pattern = preg_replace('#:([\w]+)#', '([^/]+)', $this->path);
+    $regex = "#^$pattern$#i";
 
     if (!preg_match($regex, $url, $matches)) {
       return false;
@@ -113,9 +107,11 @@ class Route
 
   public function call()
   {
+    if (!is_callable($this->callable)) {
+      throw new \Exception("Le callback de la route n'est pas appelable.");
+    }
     return call_user_func_array($this->callable, $this->matches);
   }
-
 
   public function getController()
   {

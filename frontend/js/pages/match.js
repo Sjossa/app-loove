@@ -22,7 +22,7 @@ export class Match {
     if(this.matchBtn){
       this.matchBtn.addEventListener("click", async () => {
   try {
-     console.log("liked_id envoyé:", this.profil_show);
+     // console.log("liked_id envoyé:", this.profil_show);
     await this.match_love();
     await this.loadProfil();
   } catch (error) {
@@ -33,7 +33,7 @@ export class Match {
 if(this.skipBtn){
       this.skipBtn.addEventListener("click", async () => {
   try {
-     console.log("disliked_id envoyé:", this.profil_show);
+     // console.log("disliked_id envoyé:", this.profil_show);
     await this.dislike();
     await this.loadProfil();
   } catch (error) {
@@ -52,7 +52,7 @@ if(this.skipBtn){
         this.profil.style.visibility = isVisible ? "hidden" : "visible";
       });
     } else {
-      console.warn("Élément 'btn_profil' introuvable !");
+      // console.log("Élément 'btn_profil' introuvable !");
     }
   }
 
@@ -83,7 +83,7 @@ if(this.skipBtn){
 
       if (!data.user) throw new Error("Données invalides");
       this.profil_show = data.user.id;
-      console.log(this.profil_show);
+      // console.log(this.profil_show);
 
       this.displayInfo(data.user);
 
@@ -136,7 +136,7 @@ if(this.skipBtn){
       });
 
 
-      
+
 
 
 

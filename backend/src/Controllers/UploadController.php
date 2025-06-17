@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\Controllers;
 
 use backend\models\Upload;
@@ -7,10 +8,7 @@ class UploadController
 {
 
 
-  public function __construct()
-  {
-
-  }
+  public function __construct() {}
 
   public function photo()
   {
@@ -38,12 +36,5 @@ class UploadController
         echo json_encode(['success' => false, 'error' => 'Fichier non valide ou manquant.']);
       }
     }
-
-
-
-
-
   }
 }
-
-

@@ -1,3 +1,6 @@
+import { parseJwt } from './utils/parse.js';
+import { wsClient } from "./utils/WebSocket.js";
+
 class SimpleRouter {
   constructor() {
     this.mainElement = document.querySelector("main");
@@ -9,7 +12,10 @@ class SimpleRouter {
       "/profil": { page: "profil", auth: true },
       "/chatbot": { page: "chatbot", auth: false },
       "/tchat": { page: "tchat", auth: true },
+      "/match_liste": { page: "match_liste", auth: true },
+
       "/admin": { page: "admin", auth: true , roles: ["admin"]},
+
     };
 
     this.init();
@@ -21,7 +27,10 @@ class SimpleRouter {
     this.jwt = await this.checkJWT();
 
     if (this.jwt) {
-      this.role = this.parseJwt(this.jwt).role || null;
+      this.role = this.jwt ? parseJwt(this.jwt).role : null;
+          wsClient.connect(this.jwt);
+
+
     } else {
       this.role = null;
     }
@@ -148,17 +157,6 @@ class SimpleRouter {
     }
   }
 
-  parseJwt(token) {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  }
 
   async loadPageScript(pageName) {
 
@@ -192,6 +190,12 @@ class SimpleRouter {
       case "tchat": {
         const { Tchat } = await import("./pages/tchat.js");
         new Tchat(this.jwt);
+        break;
+      }
+
+      case "match_liste": {
+        const { Match_liste } = await import ("./pages/match_liste.js");
+        new Match_liste(this.jwt);
         break;
       }
 
