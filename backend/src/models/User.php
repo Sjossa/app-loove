@@ -93,7 +93,6 @@ class User
 
     $id = $user['id'];
 
-    // Vérifie s'il existe un abonnement actif pour cet utilisateur
     $stmt = $this->db->prepare("SELECT * FROM abonnement WHERE user_id = :user_id AND statut = 'actif'");
     $stmt->bindParam(':user_id', $id, PDO::PARAM_INT);
     $stmt->execute();

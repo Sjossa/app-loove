@@ -100,7 +100,8 @@ class UserController
         "id" => $user['id'],
         "email" => $email,
         "role" => $user['role'],
-        "abonnement" => $user['abonnement']
+        "abonnement" => $user['abonnement'],
+        "user" => $user["prenom"]
       ];
 
       $jwt = JWT::encode($payload, $key, 'HS256');
@@ -108,6 +109,7 @@ class UserController
 
       echo json_encode([
         "success" => true,
+
         "message" => "Connexion réussie",
         "id" => $user['id'],
         "session_id" => session_id(),

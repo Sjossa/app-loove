@@ -6,7 +6,6 @@ class WSClient {
 
 connect(jwt) {
   this.jwt = jwt;
-  // console.log(this.jwt);
 
   if (
     this.socket &&

@@ -1,63 +1,6 @@
 
 
-/* === CARROUSELS === */
 
-/* index */
-.carrousel{
-  height: 100vh;
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-}
-
-.carrousel_container{
-  width: 300px;
-
-}
-
-.carrousel img {
-  width: 120px;
-  height: auto;
-  object-fit: cover;
-  border-radius: 999px;
-}
-
-.carrousel ul{
-  display: flex;
-  flex-direction: row;
-  width: 300px;
-
-
-}
-
-.carrousel li{
-  width: 300px;
-  flex: 0 0 300px
-}
-.carrousel_container .avis > * {
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  /* Selon ta structure, tu peux ajuster la propriété animée */
-}
-.slide-current {
-  opacity: 1;
-  transform: scale(1);
-  z-index: 2;
-}
-.slide-previous,
-.slide-next {
-  opacity: 0.5;
-  transform: scale(0.8);
-  z-index: 1;
-}
-
-
-
-
-/* .avis_actuelle{
-  background-color: red;
-  overflow: hidden;
-} */
 
 
 
@@ -156,195 +99,11 @@
   list-style: none;
 }
 
-/* === MODALES === */
-#login-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-}
 
-#login-modal.hidden {
-  display: none;
-}
 
-.modal-container
- {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 300px;
-  text-align: center;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-/* card */
-
-/* === CONTAINER match === */
-#match {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* === CARTE DE PROFIL === */
-#card {
-  background-color: #131314;
-  border-radius: 20px;
-  position: relative;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-  max-width: 700px;
-  width: 90%;
-  overflow: hidden;
-}
-
-/* === IMAGE DE PROFIL === */
-#card img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  display: block;
-  border-radius: 20px 20px 0 0;
-}
-
-/* === INFOS DE BASE === */
-#card_info_base {
-  position: absolute;
-  bottom: 10px;
-  left: 20px;
-  right: 20px;
-  background-color: #ffffff17;
-  backdrop-filter: blur(3px);
-  border-radius: 15px;
-  padding: 10px;
-  color: #0f1222;
-  font-size: 2.2vh;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* === NOM + ÂGE === */
-#card_info_un {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  font-size: 5vh;
-  font-weight: bold;
-}
-
-/* === LOCALISATION === */
-#localisation {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#localisation img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-/* === BOUTON POUR DÉPLIER LE PROFIL === */
-#card_info_base button {
-  position: absolute;
-  bottom: 50px;
-  right: 10px;
-  background-color: #f0ba7a;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  font-size: 24px;
-  color: #0f1222;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  transition: background-color 0.3s ease;
-}
-
-#card_info_base button:hover {
-  background-color: #d49e5a;
-}
-
-/* === CONTENU PROFIL DÉTAILLÉ === */
-#match_profil {
-  position: absolute;
-  top: 115px;
-  width: 100%;
-  visibility: hidden;
-  background-color: #ffffff17;
-  backdrop-filter: blur(3px);
-  border-radius: 0 0 20px 20px;
-  z-index: 2;
-}
-
-#bio_profil {
-  padding: 15px;
-  background-color: #f0bb7ab9;
-  backdrop-filter: blur(8px);
-  border-radius: 0 0 20px 20px;
-  color: #0f1222;
-}
-
-/* === PASSIONS === */
-#card_info_passion {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-
-#card_info_passion p {
-  margin: 0;
-  font-weight: bold;
-}
-
-#card_info_passion ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-#card_info_passion li {
-  font-size: 1.8vh;
-  background-color: #f0ba7a;
-  color: #0f1222;
-  border-radius: 50px;
-  padding: 5px 10px;
-  white-space: nowrap;
-}
 
 /* === BOUTONS DE CHOIX (MATCH/SKIP) === */
-#choix {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 20px;
-  width: 200px;
-}
 
-#choix button {
-  background: none;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-}
 
 
 /*messagerie*/
@@ -371,3 +130,59 @@
   background-color: #131314;
   color: red;
 }
+/* =============================
+   === SECTIONS DE L’INDEX ===
+   ============================= */
+
+/* Section 1 - Hero */
+
+
+
+/*chatbot*/
+.zone{
+  display: flex;
+ justify-content: center;
+align-items: center;
+height: 100dvh;
+overflow: hidden;
+}
+
+.chatbot{
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.1fr 1fr;
+  background-color: #0f1222;
+  border-radius: 50px;
+  border: #f0ba7a solid 1px;
+  width: 850px;
+  height: 500px;
+
+}
+
+.chatbot > img{
+  width: 300px;
+  border-radius: 50px;
+  margin: 10px;
+}
+
+.dialogue{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+
+#zone_chat{
+  font-size: 2rem;
+  margin: 10px;
+}
+
+#user_input{
+  width: 300px;
+  margin-top: 20px;
+  border-radius: 20px;
+  height: 50px;
+  font-size: 1rem;
+}
+

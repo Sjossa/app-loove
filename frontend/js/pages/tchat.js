@@ -1,13 +1,13 @@
 import { wsClient } from "../utils/WebSocket.js";
+import { parseJwt } from "../utils/parse.js";
 
 export class Tchat {
   constructor(jwt) {
     this.jwt = jwt;
-
+ this.myUserId = parseJwt(jwt)?.id
     wsClient.connect(this.jwt);
 
     wsClient.onMessage((data) => {
-
       const currentConvID = this.liste_message.dataset.conversationId;
       if (data.conversationID == currentConvID) {
         this.afficherMessages({
@@ -68,7 +68,7 @@ export class Tchat {
         if (data.user.length > 0) {
           data.user.forEach((user) => {
             const li = document.createElement("li");
-            li.textContent = user.prenom;
+            li.textContent = user.prenom + " " + user.nom;
             li.dataset.id = user.id;
             li.classList.add("match");
 
@@ -128,7 +128,7 @@ export class Tchat {
                 matchID,
                 data.conversation.conversation_id
               );
-              inputElement.value = ""; // Vide l'input après envoi
+              inputElement.value = "";
             }
           };
         }
@@ -159,13 +159,14 @@ export class Tchat {
 
       if (data.status === "succes") {
         const messageData = {
-          type : "message",
+          type: "message",
           conversationID: conversationID,
           matchID: matchID,
           content: message,
+          sender_id: this.myUserId,
           timestamp: Date.now(),
         };
-        wsClient.send(messageData)
+        wsClient.send(messageData);
       } else {
         console.warn("WebSocket n'est pas connecté.");
       }
@@ -180,7 +181,8 @@ export class Tchat {
       return;
     }
 
-    this.liste_message.dataset.conversationId = data.conversation?.conversation_id;
+    this.liste_message.dataset.conversationId =
+      data.conversation?.conversation_id;
     console.log(data);
 
     if (
@@ -201,7 +203,11 @@ export class Tchat {
           const li = document.createElement("li");
           li.textContent = msg.content || "";
           li.dataset.id = msgID;
-          li.classList.add("message-item");
+          if (msg.sender_id === this.myUserId) {
+            li.classList.add("my-message");
+          } else {
+            li.classList.add("other-message");
+          }
           this.liste_message.appendChild(li);
         }
       });

@@ -35,23 +35,18 @@ class Chat implements MessageComponentInterface
   public function onOpen(ConnectionInterface $conn)
   {
     $this->clients->attach($conn);
-    echo "Nouvelle connexion : ({$conn->resourceId})\n";
   }
 
   public function onMessage(ConnectionInterface $from, $msg)
   {
-    
+
     $data = json_decode($msg, true);
-     var_dump($data);
+
     if ($data === null) {
       return;
     }
 
-
-
     if (!isset($data['type'])) {
-      var_dump($data);
-
 
       echo "Message reçu sans type\n";
       return;
@@ -68,22 +63,48 @@ class Chat implements MessageComponentInterface
         try {
           $secretKey = $_ENV['JWT_SECRET'] ?? '';
           $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
-
-
+          print_r($decoded);
           $userId = $decoded->id ?? null;
+          $date = $decoded->iat ?? null;
+          $prenom =  $decoded->user ?? null;
+
+          date_default_timezone_set('Europe/Paris');
+
+
           if (!$userId) {
             throw new Exception("Token invalide: userId manquant");
           }
 
 
-          $this->users[$from->resourceId] = $userId;
+          $this->users[$from->resourceId] = [
+            'userId' => $userId,
+            'date' => $date
+          ];
 
 
-          $result = $this->websocket->only($userId);
 
+
+          $userId = $this->users[$from->resourceId]['userId'];
+          $date = $this->users[$from->resourceId]['date'];
+
+          $result = $this->websocket->only($userId, $date);
+
+
+          if (is_array($result) && !empty($result)) {
+            foreach ($result as $event) {
+              $from->send(json_encode([
+                "type" => $event['type'],
+                "id" => $event['id'],
+                "timestamp" => $event['timestamp']
+              ]));
+
+              echo "🔔 Notification retardée envoyée à l'utilisateur {$userId} : [type: {$event['type']}, id: {$event['id']}, date: {$event['timestamp']}]\n";
+            }
+          }
 
 
           $from->send(json_encode(['type' => 'auth', 'success' => true, 'message' => 'Authentification réussie']));
+
 
           echo "Connexion {$from->resourceId} authentifiée pour user {$userId}\n";
         } catch (\Exception $e) {
@@ -93,7 +114,6 @@ class Chat implements MessageComponentInterface
         break;
 
       case 'message':
-        // Diffuser le message à tous les clients
         $jsonsend = json_encode($data);
         foreach ($this->clients as $client) {
           $client->send($jsonsend);
@@ -106,6 +126,7 @@ class Chat implements MessageComponentInterface
         $toUserId = $data['to_user_id'] ?? null;
         $payload = $data['data'] ?? [];
 
+
         if (!$toUserId) {
           echo "User cible manquant pour notification $data[type]\n";
           return;
@@ -116,7 +137,7 @@ class Chat implements MessageComponentInterface
         foreach ($this->clients as $client) {
           $clientId = $client->resourceId;
 
-          if (isset($this->users[$clientId]) && $this->users[$clientId] == $toUserId) {
+          if (isset($this->users[$clientId]) && $this->users[$clientId]['userId'] == $toUserId) {
             $client->send(json_encode([
               'type' => $data['type'],
               'data' => $payload

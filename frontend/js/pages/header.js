@@ -2,9 +2,7 @@ import { wsClient } from "../utils/WebSocket.js";
 
 export class headers {
   constructor(jwt) {
-
     this.jwt = jwt;
-
 
     wsClient.connect(this.jwt);
     wsClient.onMessage((data) => {
@@ -16,20 +14,20 @@ export class headers {
 
           break;
 
-          case "match":
-            this.newNotif("match");
-            break;
+        case "match":
+          this.newNotif("match");
+          break;
 
-            case "like":
-            this.newNotif("match");
-            break;
+        case "like":
+          this.newNotif("like");
+          break;
 
         default:
           break;
       }
     });
 
-    this.nav = document.querySelector(".nav-list");
+    this.nav = document.querySelector(".header-nav-list");
     this.modal = document.getElementById("login-modal");
     this.closeBtn = this.modal.querySelector(".modal-close");
     this.input_mail = document.querySelector("#login-email");
@@ -40,61 +38,76 @@ export class headers {
     this.initEvents();
   }
 
-  contenu() {
-    this.nav.innerHTML = "";
-    const conteneur_logo = document.createElement("a");
-    conteneur_logo.href = "index";
-    conteneur_logo.className = "nav-link";
+ contenu() {
+  this.nav.innerHTML = "";
 
-    const logo = document.createElement("img");
-    logo.className = "brand-logo";
-    logo.src = "/images/logo.png";
-    logo.alt = "logo meetlink";
+  const conteneur_logo = document.createElement("a");
+  conteneur_logo.href = "index";
+  conteneur_logo.className = "header-nav-link";
 
-    conteneur_logo.appendChild(logo);
+  const logo = document.createElement("img");
+  logo.className = "header-logo";
+  logo.src = "/images/logo.png";
+  logo.alt = "logo meetlink";
 
-    const logoItem = document.createElement("li");
-    logoItem.className = "nav-item";
-    logoItem.appendChild(conteneur_logo);
-    this.nav.appendChild(logoItem);
+  conteneur_logo.appendChild(logo);
 
-    if (this.jwt) {
-      const links = [
-        { text: "Profil", href: "profil" },
-        { text: "message", href: "tchat" },
-        { text: "match_liste", href: "match_liste" },
+  const logoItem = document.createElement("li");
+  logoItem.className = "header-nav-item";
+  logoItem.appendChild(conteneur_logo);
+  this.nav.appendChild(logoItem);
+
+  if (this.jwt) {
+    const payload = JSON.parse(atob(this.jwt.split('.')[1]));
+    const role = payload.role;
+
+    let links = [];
+
+    if (role === "admin") {
+      links = [
+        { text: "Admin", href: "/admin" },
+        { text: "Utilisateurs", href: "admin_users" },
       ];
-
-      links.forEach((item) => {
-        const li = document.createElement("li");
-        li.className = "nav-item";
-
-        const link = document.createElement("a");
-        link.href = item.href;
-        link.className = "nav-link";
-        link.textContent = item.text;
-
-        li.appendChild(link);
-        this.nav.appendChild(li);
-      });
-
-      const notification = document.createElement("button");
-      notification.className = "notification";
-      notification.textContent = "🔔";
-      this.nav.appendChild(notification);
-      this.notificationbtn = notification;
     } else {
-      const li = document.createElement("li");
-      li.className = "nav-item nav-cta";
-
-      const button = document.createElement("button");
-      button.className = "btn btn-primary login-trigger";
-      button.textContent = "Connexion";
-
-      li.appendChild(button);
-      this.nav.appendChild(li);
+      links = [
+        { text: "Profil", href: "profil" },
+        { text: "Message", href: "tchat" },
+        { text: "Matchs", href: "match_liste" },
+      ];
     }
+
+    links.forEach((item) => {
+      const li = document.createElement("li");
+      li.className = "header-nav-item";
+
+      const link = document.createElement("a");
+      link.href = item.href;
+      link.className = "header-nav-link";
+      link.textContent = item.text;
+
+      li.appendChild(link);
+      this.nav.appendChild(li);
+    });
+
+    const notification = document.createElement("button");
+    notification.className = "notification";
+    notification.textContent = "🔔";
+    this.nav.appendChild(notification);
+    this.notificationbtn = notification;
+
+  } else {
+    const li = document.createElement("li");
+    li.className = "header-nav-item nav-cta";
+
+    const button = document.createElement("button");
+    button.className = "header-login";
+    button.textContent = "Connexion";
+
+    li.appendChild(button);
+    this.nav.appendChild(li);
   }
+}
+
 
   open() {
     this.modal.classList.remove("hidden");
@@ -125,7 +138,7 @@ export class headers {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          window.location.href = "/match";
+          window.location.href = "/index";
 
           this.close();
         } else {
@@ -134,7 +147,7 @@ export class headers {
             "error"
           );
         }
-       })
+      })
       .catch((error) => {
         console.error("Erreur lors de l'envoi :", error);
         this.showMessage(
@@ -165,7 +178,7 @@ export class headers {
 
   initEvents() {
     this.contenu();
-    this.openBtn = document.querySelector(".login-trigger");
+    this.openBtn = document.querySelector(".header-login");
 
     if (this.openBtn) {
       this.openBtn.addEventListener("click", () => this.open());
@@ -180,7 +193,9 @@ export class headers {
 
   newNotif(texte) {
     if (!this.notificationbtn) return;
+    const notifSave = (localStorage.getItem("notifications")) || [];
 
+    notifSave
     this.notificationbtn.classList.add("active");
     this.notificationbtn.title = texte;
 
@@ -190,7 +205,17 @@ export class headers {
       badge.className = "notif-badge";
       this.notificationbtn.appendChild(badge);
     }
+
     let count = parseInt(badge.textContent) || 0;
     badge.textContent = count + 1;
+
+    this.notificationbtn.addEventListener("click", () => {
+      this.notificationbtn.classList.remove("active");
+      if (badge) {
+    badge.remove();
+    this.open()
+  }
+
+    });
   }
 }

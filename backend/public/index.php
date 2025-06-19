@@ -12,6 +12,7 @@ use backend\Controllers\ProfilController;
 use backend\Controllers\MatchController;
 use backend\Controllers\TchatController;
 use backend\Controllers\PaypalController;
+use backend\Controllers\AdminController;
 
 
 use Dotenv\Dotenv;
@@ -108,6 +109,13 @@ try {
     $paypal = new PaypalController($database);
     $router->post('ipn',[$paypal,'ipn']);
   });
+
+  $router->group('/admin', function ($router) use ($database){
+  $admin = new AdminController($database);
+  $router->get('user', [$admin, 'user']);
+  $router->delete('delete/:userId', [$admin, 'delete']);
+
+});
 
   $router->run();
 } catch (Exception $e) {

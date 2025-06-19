@@ -4,46 +4,42 @@ export class Match {
     this.profil = document.querySelector("#match_profil");
     this.btn_profil = document.querySelector("#btn_profil");
     this.match_ok = document.querySelector("#match");
-    this.btn_choix = document.querySelector('#choix')
+    this.btn_choix = document.querySelector("#choix");
     this.matchBtn = document.querySelector(".matchbtn");
     this.skipBtn = document.querySelector(".skip");
 
-     if (this.matchBtn) {
-    this.matchBtn.disabled = true;
-  }
+    if (this.matchBtn) {
+      this.matchBtn.disabled = true;
+    }
 
     this.visibility();
     this.loadProfil();
     this.choix();
   }
 
-  choix(){
-
-    if(this.matchBtn){
+  choix() {
+    if (this.matchBtn) {
       this.matchBtn.addEventListener("click", async () => {
-  try {
-     // console.log("liked_id envoyé:", this.profil_show);
-    await this.match_love();
-    await this.loadProfil();
-  } catch (error) {
-    console.error("Erreur dans le match ou le chargement :", error);
+        try {
+          await this.match_love();
+          await this.loadProfil();
+        } catch (error) {
+          console.error("Erreur dans le match ou le chargement :", error);
+        }
+      });
+
+      if (this.skipBtn) {
+        this.skipBtn.addEventListener("click", async () => {
+          try {
+            await this.dislike();
+            await this.loadProfil();
+          } catch (error) {
+            console.error("Erreur dans le match ou le chargement :", error);
+          }
+        });
+      }
+    }
   }
-});
-
-if(this.skipBtn){
-      this.skipBtn.addEventListener("click", async () => {
-  try {
-     // console.log("disliked_id envoyé:", this.profil_show);
-    await this.dislike();
-    await this.loadProfil();
-  } catch (error) {
-    console.error("Erreur dans le match ou le chargement :", error);
-  }
-});
-
-
-
-  }}}
 
   visibility() {
     if (this.btn_profil) {
@@ -58,7 +54,7 @@ if(this.skipBtn){
 
   getUserIdFromJwt() {
     try {
-      const payload = JSON.parse(atob(this.jwt.split('.')[1]));
+      const payload = JSON.parse(atob(this.jwt.split(".")[1]));
       return payload.id || null;
     } catch {
       return null;
@@ -88,8 +84,8 @@ if(this.skipBtn){
       this.displayInfo(data.user);
 
       if (this.matchBtn) {
-      this.matchBtn.disabled = false;
-    }
+        this.matchBtn.disabled = false;
+      }
     } catch (error) {
       console.error("Erreur chargement profil:", error);
     }
@@ -101,7 +97,8 @@ if(this.skipBtn){
     fields.forEach((field) => {
       const element = document.querySelector(`[data-user="${field}"]`);
       if (element) {
-        element.textContent = field === "age" ? `${user[field]} ans` : user[field] || '';
+        element.textContent =
+          field === "age" ? `${user[field]} ans` : user[field] || "";
       }
     });
 
@@ -112,16 +109,13 @@ if(this.skipBtn){
     }
   }
 
-
-  async match_love(){
+  async match_love() {
     if (!this.profil_show) {
-    console.error("Aucun profil chargé pour liker");
-    return;
-  }
+      console.error("Aucun profil chargé pour liker");
+      return;
+    }
 
-
-
-     try {
+    try {
       const response = await fetch("https://back.meetlink.local/match/like", {
         method: "POST",
         headers: {
@@ -130,53 +124,39 @@ if(this.skipBtn){
         },
         body: JSON.stringify({
           liker_id: this.getUserIdFromJwt(),
-          liked_id: this.profil_show
+          liked_id: this.profil_show,
         }),
         credentials: "include",
       });
-
-
-
-
-
-
     } catch (error) {
       console.error("Erreur de match :", error);
     }
-
   }
 
-    async dislike(){
+  async dislike() {
     if (!this.profil_show) {
-    console.error("Aucun profil chargé pour liker");
-    return;
-  }
+      console.error("Aucun profil chargé pour liker");
+      return;
+    }
 
-
-
-     try {
-      const response = await fetch("https://back.meetlink.local/match/dislike", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.jwt}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dislike_id: this.getUserIdFromJwt(),
-          disliked_id: this.profil_show
-        }),
-        credentials: "include",
-      });
-
-
-
-
+    try {
+      const response = await fetch(
+        "https://back.meetlink.local/match/dislike",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.jwt}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            dislike_id: this.getUserIdFromJwt(),
+            disliked_id: this.profil_show,
+          }),
+          credentials: "include",
+        }
+      );
     } catch (error) {
       console.error("Erreur de match :", error);
     }
-
   }
-
-
-
-};
+}

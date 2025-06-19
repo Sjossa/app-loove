@@ -1,4 +1,4 @@
-import { parseJwt } from './utils/parse.js';
+import { parseJwt } from "./utils/parse.js";
 import { wsClient } from "./utils/WebSocket.js";
 
 class SimpleRouter {
@@ -11,11 +11,11 @@ class SimpleRouter {
       "/": { page: "index", auth: false },
       "/profil": { page: "profil", auth: true },
       "/chatbot": { page: "chatbot", auth: false },
+
       "/tchat": { page: "tchat", auth: true },
       "/match_liste": { page: "match_liste", auth: true },
 
-      "/admin": { page: "admin", auth: true , roles: ["admin"]},
-
+      "/admin": { page: "users", auth: true, roles: ["admin"] },
     };
 
     this.init();
@@ -26,11 +26,9 @@ class SimpleRouter {
 
     this.jwt = await this.checkJWT();
 
-    if (this.jwt) {
+    if (this.jwt !== null) {
       this.role = this.jwt ? parseJwt(this.jwt).role : null;
-          wsClient.connect(this.jwt);
-
-
+      wsClient.connect(this.jwt);
     } else {
       this.role = null;
     }
@@ -73,12 +71,10 @@ class SimpleRouter {
       return this.handleRoute("/");
     }
 
-    if (route.roles && (!this.role || !route.roles.includes(this.role)) ) {
+    if (route.roles && (!this.role || !route.roles.includes(this.role))) {
       history.replaceState(null, "", "/");
       return this.handleRoute("/");
     }
-
-
 
     const pageName = this.getPageName(route.page);
     const pageUrl = `pages/${pageName}.html`;
@@ -88,8 +84,10 @@ class SimpleRouter {
 
   getPageName(page) {
     if (page === "index") {
-      return this.jwt ? "match" : "index_off";
+      if (!this.jwt) return "index_off";
+      return this.role === "admin" ? "users" : "match";
     }
+
     return page;
   }
 
@@ -141,79 +139,85 @@ class SimpleRouter {
         method: "POST",
         credentials: "include",
       });
+
+      if (response.status === 401) {
+        return null;
+      }
       if (!response.ok) {
         return null;
       }
       const data = await response.json();
 
-
       return data.jwt || null;
     } catch (error) {
-      console.warn(
-        "Erreur lors de la requête fetch JWT, vérifie backend et CORS :",
-        error
-      );
+      console.error("Erreur chargement script :", error);
       return null;
     }
   }
 
-
   async loadPageScript(pageName) {
+    this.loadHeaderOnce();
+    try {
+      switch (pageName) {
+        case "index_off": {
+          const module = await import("./pages/index.js");
+          const { Carousel } = module;
+          new Carousel(); 
+          break;
+        }
 
-    this.loadHeaderOnce()
-  try {
-    switch (pageName) {
-      case "index_off": {
+        case "chatbot": {
+          const { Chatbot } = await import("./pages/chatbot.js");
+          const chatbot = new Chatbot();
+          chatbot.init();
+          break;
+        }
 
+        case "profil": {
+          const { Profil } = await import("./pages/profil.js");
+          new Profil(this.jwt);
+          break;
+        }
+
+        case "match": {
+          const { Match } = await import("./pages/match.js");
+          new Match(this.jwt);
+
+          break;
+        }
+
+        case "tchat": {
+          const { Tchat } = await import("./pages/tchat.js");
+          new Tchat(this.jwt);
+          break;
+        }
+
+        case "match_liste": {
+          const { Match_liste } = await import("./pages/match_liste.js");
+          new Match_liste(this.jwt);
+          break;
+        }
+
+        case "users": {
+          const { admin } = await import("./pages/admin.js");
+          new admin(this.jwt);
+          break;
+        }
+
+        default:
+          console.warn(`Aucun script pour la page : ${pageName}`);
       }
-
-      case "chatbot": {
-        const { Chatbot } = await import("./pages/chatbot.js");
-        const chatbot = new Chatbot();
-        chatbot.init();
-        break;
-      }
-
-      case "profil": {
-        const { Profil } = await import("./pages/profil.js");
-        new Profil(this.jwt);
-        break;
-      }
-
-      case "match": {
-        const { Match } = await import("./pages/match.js");
-        new Match(this.jwt);
-
-        break;
-      }
-
-      case "tchat": {
-        const { Tchat } = await import("./pages/tchat.js");
-        new Tchat(this.jwt);
-        break;
-      }
-
-      case "match_liste": {
-        const { Match_liste } = await import ("./pages/match_liste.js");
-        new Match_liste(this.jwt);
-        break;
-      }
-
-      default:
-        console.warn(`Aucun script pour la page : ${pageName}`);
+    } catch (error) {
+      console.error("Erreur chargement script :", error);
     }
-  } catch (error) {
-    console.error("Erreur chargement script :", error);
   }
-}
 
-async loadHeaderOnce() {
-  if (!this.headerInstance) {
-    const { headers: Headers } = await import("./pages/header.js");
-    this.headerInstance = new Headers(this.jwt);
+  async loadHeaderOnce() {
+    if (!this.headerInstance) {
+      const { headers: Headers } = await import("./pages/header.js");
+      this.headerInstance = new Headers(this.jwt);
+    }
   }
-}
-
 }
 
 new SimpleRouter();

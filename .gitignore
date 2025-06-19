@@ -4,5 +4,6 @@ composer.json
 vendor
 composer.lock
 photo
-
+node_modules
 composer.phar
+package-lock.json

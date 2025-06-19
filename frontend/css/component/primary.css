@@ -1,3 +1,4 @@
+/* === Headers === */
 header {
   background-color: #0f1222;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
@@ -6,14 +7,14 @@ header {
   z-index: 1;
 }
 
-.main-nav {
+.header-main-nav {
   display: flex;
   align-items: center;
   padding: 0 1rem;
   min-height: 70px;
 }
 
-.nav-list {
+.header-nav-list {
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -24,12 +25,12 @@ header {
   gap: 1rem;
 }
 
-.nav-item {
+.header-nav-item {
   display: flex;
   align-items: center;
 }
 
-.nav-link {
+.header-nav-link {
   color: #f0f8ff;
   font-size: 2.5rem;
   font-weight: 500;
@@ -39,51 +40,201 @@ header {
   text-decoration: none;
 }
 
-.nav-link:hover {
+.header-nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: #fbbf77;
   transform: translateY(-2px);
 }
 
-.brand-logo {
-  width: 10vw;
+.header-logo {
+  width: 15vw;
 }
 
-.brand-logo:hover {
+.header-logo:hover {
   transform: scale(1.05);
 }
 
 .nav-cta {
   margin-left: 1rem;
 }
+.header-login{
+width: 20vw;
 
-
-.login-trigger {
+  margin: 30px;
   background-color: #fbbf77;
-  color: #0f1222;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 2rem;
+  border-radius: 30px;
+  font-size: 3vw;
+  padding: 20px;
+}
+
+/* === MODALES === */
+
+#login-modal {
+  position: fixed;
+  inset: 0; /* top: 0; right: 0; bottom: 0; left: 0 */
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+#login-modal.hidden {
+  display: none;
+}
+
+/* Animation d’apparition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideUp 0.4s ease forwards;
+  transform: translateY(20px);
+}
+
+/* Animation de montée */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #999;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(251, 191, 119, 0.3);
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+/* Contenu interne */
+.modal-container h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.modal-container input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   font-size: 1rem;
 }
 
-.login-trigger:hover {
-  background-color: #f0ba7a;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(251, 191, 119, 0.4);
+.modal-container button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #5a67d8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.login-trigger:active
- {
-  transform: translateY(-1px);
+.modal-container button:hover {
+  background-color: #434190;
 }
 
-.card {
+
+
+
+/* === INDEX === */
+
+#section-exterieur {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)),
+    url("../../images/fond_index.webp") center / cover no-repeat;
+}
+
+.section-exterieur__container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.section-exterieur__text {
+  color: rgb(248, 250, 252);
+  text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+  font-size: 3.5rem;
+  text-align: center;
+  margin: 30px;
+}
+
+.section-exterieur__button {
+  font-size: 5rem;
+  color: #0f1222;
+  background-color: #fbbf77;
+  box-shadow: 0px 20px 20px 20px rgba(0, 0, 0, 0.5);
+  padding: 20px 30px;
+  border-radius: 20px;
+
+}
+
+
+/* Section 2 - Présentation */
+.section-exterieur--2 {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  width: auto;
+  text-align: left;
+}
+
+.section-exterieur--2__title {
+  font-size: 2.5rem;
+  color: antiquewhite;
+}
+
+.section-exterieur--2__info {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+
+}
+
+.section-exterieur--2__card {
+ display: flex;
   flex-direction: column;
   width: 400px;
   margin: 60px 60px;
@@ -95,123 +246,118 @@ header {
   align-items: center;
   font-size: 1.3rem;
   color: darkblue;
+  justify-content: center;
 }
 
-.card > img {
-     width: 10rem;
+.section-exterieur--2__card img {
+   width: 10rem;
     position: relative;
     bottom: 20px;
 }
 
-/* =============================
-   === SECTIONS DE L’INDEX ===
-   ============================= */
 
-/* Section 1 - Hero */
-.section_1_exterieur {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)),
-    url("../../images/aaaa.webp") center / cover no-repeat;
-}
 
-.section_1_exterieur > * {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
-
-.section_1_exterieur > div p {
-  color: rgb(248, 250, 252);
-  text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
-  font-size: 3.5rem;
-  text-align: center;
-  margin: 30px;
-}
-
-.section_1_exterieur > button {
-  /* padding: 20px 60px; */
-  font-size: 5rem;
-  color: #0f1222;
-  box-shadow: 0px 10px 10px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Section 2 - Présentation */
-.section_2_exterieur {
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-  width: auto;
-  text-align: left;
-}
-
-.section_2_exterieur > p {
-  font-size: 2.5rem;
-  color: antiquewhite;
-}
 
 .section_3_exterieur > p {
   font-size: 5vh;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-
-/*chatbot*/
-.zone{
+/* Container principal */
+.glide {
+  height: 100vh;
   display: flex;
- justify-content: center;
-align-items: center;
-height: 100dvh;
-overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.chatbot{
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 0.1fr 1fr;
-  background-color: #0f1222;
-  border-radius: 50px;
-  border: #f0ba7a solid 1px;
-  width: 850px;
-  height: 500px;
-
+/* Track */
+.glide__track {
+  width: 1000px;
+  overflow: visible;
 }
 
-.chatbot > img{
+/* Liste des slides */
+.glide__slides {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  will-change: transform;
+}
+
+/* Chaque slide */
+.glide__slide {
   width: 300px;
-  border-radius: 50px;
-  margin: 10px;
+  flex: 0 0 300px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0.5;
+  transform: scale(0.8);
 }
 
-.dialogue{
+/* Slide active */
+.glide__slide.glide__slide--active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+}
+
+/* Images */
+.glide img {
+  width: 120px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 999px;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+/* Texte */
+.info_de_base,
+.avis_personne {
+  text-align: center;
+}
+
+
+
+/* === match === */
+
+#match{
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+
 }
 
+.card{
+  
+  width: 500px;
+  background-color: white;
 
-#zone_chat{
-  font-size: 2rem;
-  margin: 10px;
+}
+.card img {
+  display: none;
 }
 
-#user_input{
-  width: 300px;
+#choix {
+  display: none;
+  flex-direction: row;
+  justify-content: space-between;
   margin-top: 20px;
-  border-radius: 20px;
-  height: 50px;
-  font-size: 1rem;
+  width: 200px;
 }
 
+#choix button {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+}
 
-
-
-
+/* === FOOTER === */
 

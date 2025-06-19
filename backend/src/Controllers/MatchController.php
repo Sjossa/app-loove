@@ -73,55 +73,56 @@ class MatchController
     }
   }
 
-public function like()
-{
+  public function like()
+  {
     SessionManager::startSession();
     header('Content-Type: application/json');
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $data = json_decode(file_get_contents("php://input"), true);
+      $data = json_decode(file_get_contents("php://input"), true);
 
-        $liker_id = $data['liker_id'] ?? null;
-        $liked_id = $data['liked_id'] ?? null;
+      $liker_id = $data['liker_id'] ?? null;
+      $liked_id = $data['liked_id'] ?? null;
 
-        $result = $this->matchModel->like($liker_id, $liked_id);
+      $result = $this->matchModel->like($liker_id, $liked_id);
 
-        if ($result['type'] === "match") {
-            $notification = [
-                'type' => 'match',
-                'to_user_id' => $liked_id,
-                'data' => $result,
-            ];
+      if ($result['type'] === "match") {
+        $notification = [
+          'type' => 'match',
+          'to_user_id' => $liked_id,
+          'data' => $result,
+        ];
 
 
-            $this->sendNotificationToWebSocketServer($notification);
+        $this->sendNotificationToWebSocketServer($notification);
 
-            echo json_encode(['success' => true, 'message' => 'match enregistré avec succès']);
-            exit;
-        } elseif ($result['type'] === "like") {
-            $notification = [
-                'type' => 'like',
-                'from_user_id' => $liker_id,
-                'to_user_id' => $liked_id,
-                'data' => $result,
-            ];
-
-            // Envoi notification via WebSocket client
-            $this->sendNotificationToWebSocketServer($notification);
-
-            echo json_encode(['success' => true, 'message' => 'profil liker']);
-            exit;
-        } else {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'enregistrement du like']);
-            exit;
-        }
-    } else {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
+        echo json_encode(['success' => true, 'message' => 'match enregistré avec succès']);
         exit;
+      } elseif ($result['type'] === "like") {
+        $notification = [
+          "iat" => time(),
+          'type' => 'like',
+          'from_user_id' => $liker_id,
+          'to_user_id' => $liked_id,
+          'data' => $result,
+        ];
+
+        
+        $this->sendNotificationToWebSocketServer($notification);
+
+        echo json_encode(['success' => true, 'message' => 'profil liker']);
+        exit;
+      } else {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'enregistrement du like']);
+        exit;
+      }
+    } else {
+      http_response_code(400);
+      echo json_encode(['success' => false, 'message' => 'Paramètres manquants']);
+      exit;
     }
-}
+  }
 
 
   public function likeWait()
