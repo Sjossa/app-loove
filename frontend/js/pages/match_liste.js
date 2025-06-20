@@ -2,22 +2,17 @@ import { parseJwt } from "../utils/parse.js";
 
 export class Match_liste {
   constructor(jwt) {
-    this.paypalForm = document.querySelector(".paypal");
-    this.tokenInput = document.querySelector(".token");
     this.jwt = jwt;
+    this.paypalForm = document.querySelector("#paypal");
+    this.tokenInput = document.querySelector(".token");
     this.modal = document.querySelector("#paypal");
-    this.closeBtn = this.modal.querySelector(".modal-close");
     this.matchContainer = document.querySelector(".liste-matches");
 
-    this.abs = this.jwt ? parseJwt(this.jwt).abonnement : null;
+    this.abs = this.jwt ? parseJwt(this.jwt).abonnement : false;
     console.log("Abonnement:", this.abs);
 
     this.abonnement();
-
-    // Event pour fermer la modale
-    this.closeBtn.addEventListener("click", () => {
-      this.modal.setAttribute("hidden", "");
-    });
+    this.jeton();
   }
 
   async abonnement() {
@@ -35,45 +30,66 @@ export class Match_liste {
       });
 
       const data = await response.json();
-      console.log(data);
+      console.log("Utilisateurs récupérés :", data);
 
       this.matchContainer.innerHTML = "";
 
-      data.forEach((user) => {
-        const userCard = document.createElement("div");
-        userCard.classList.add("user-card");
+      if (this.abs === true) {
+        this.paypalForm.style.display = "none";
 
-        userCard.innerHTML = `
-          <div class="user-card-content" style="background-image: url('https://back.meetlink.local/${user.profile_picture}');">
-            <div class="user-info">
-              <h3>${user.prenom} ${user.nom}</h3>
-              <p>Âge : ${user.age ?? "Non renseigné"}</p>
-              <p>Localisation : ${user.localisation ?? "Non renseignée"}</p>
+        if (data.length === 0) {
+          const noMatch = document.createElement("p");
+          noMatch.textContent = "😔 Désolé, vous n'avez pas encore de match.";
+          noMatch.style.textAlign = "center";
+          noMatch.style.fontSize = "1.2rem";
+          noMatch.style.marginTop = "2rem";
+          noMatch.style.color = "#555";
+          this.matchContainer.appendChild(noMatch);
+          return;
+        }
+
+        data.forEach((user) => {
+          const userCard = document.createElement("div");
+          userCard.classList.add("user-card");
+
+          userCard.innerHTML = `
+            <div class="user-card-content" style="background-image: url('https://back.meetlink.local/${user.profile_picture}');">
+              <div class="user-info">
+                <h3>${user.prenom} ${user.nom}</h3>
+                <p>Âge : ${user.age ?? "Non renseigné"}</p>
+                <p>Localisation : ${user.localisation ?? "Non renseignée"}</p>
+              </div>
             </div>
-          </div>
-        `;
-
-        this.matchContainer.appendChild(userCard);
-      });
-
-      if (this.abs === false) {
-        this.matchContainer.style.filter = "none";
-        this.modal.setAttribute("hidden", "");
+          `;
+          this.matchContainer.appendChild(userCard);
+        });
 
       } else {
-        this.matchContainer.style.filter = "blur(5px)";
-        this.modal.setAttribute("hidden", "");
-        
+        for (let i = 0; i < 12; i++) {
+          const fakeCard = document.createElement("div");
+          fakeCard.classList.add("user-card", "fake-card");
+          fakeCard.innerHTML = `
+            <div class="user-card-content">
+              <div class="user-info">
+                <h3>Utilisateur Premium</h3>
+                <p>Âge : --</p>
+                <p>Localisation : --</p>
+              </div>
+            </div>
+          `;
+          this.matchContainer.appendChild(fakeCard);
+        }
 
-
-        this.matchContainer.addEventListener("click", () => {
-          this.modal.removeAttribute("hidden");
-        }, { once: true });
-
-        this.jeton();
+        this.matchContainer.addEventListener(
+          "click",
+          () => {
+            this.modal.removeAttribute("hidden");
+          },
+          { once: true }
+        );
       }
     } catch (error) {
-      console.error("Erreur fetch:", error);
+      console.error("Erreur lors de l'appel fetch:", error);
     }
   }
 
@@ -81,7 +97,7 @@ export class Match_liste {
     if (this.tokenInput) {
       this.tokenInput.value = this.jwt;
     } else {
-      alert("Token manquant");
+      console.warn("Token manquant pour PayPal.");
     }
   }
 }

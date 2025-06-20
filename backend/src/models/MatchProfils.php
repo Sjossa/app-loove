@@ -45,7 +45,7 @@ class MatchProfils
       }
 
 
-      $stmt2 = $this->db->prepare("SELECT prenom,nom ,localisation,age,id FROM users WHERE id = :id");
+      $stmt2 = $this->db->prepare("SELECT * FROM users WHERE id = :id");
       $stmt2->bindParam(':id', $randomId, PDO::PARAM_INT);
       $stmt2->execute();
 

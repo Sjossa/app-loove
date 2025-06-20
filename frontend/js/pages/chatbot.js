@@ -3,7 +3,6 @@ class Chatbot {
     this.questions = [
       { key: "prenom", text: "Quel est votre prénom ?" },
       { key: "nom", text: "Et ton nom de famille ?" },
-
       { key: "age", text: "Quel âge as-tu ?" },
       { key: "localisation", text: "Où habites-tu (ville) ?" },
       { key: "email", text: "Quelle est ton adresse mail ?" },
@@ -24,8 +23,7 @@ class Chatbot {
     ];
 
     this.messages = {
-      intro:
-        "Salut, je suis MCLink. Prêt(e) à créer ton profil ?",
+      intro: "Salut, je suis MCLink. Prêt(e) à créer ton profil ?",
       end: "🎉 Merci ! Ton profil est prêt à être sauvegardé.",
       errors: {
         email: "❌ Adresse email invalide.",
@@ -41,54 +39,106 @@ class Chatbot {
     this.input = document.querySelector("#user_input");
     this.btnNext = document.querySelector("#next");
     this.btnPrev = document.querySelector("#previous");
+
+    this.inputPhoto = null;
   }
 
   init() {
-    this.chatZone.innerHTML = this.messages.intro;
+    this.chatZone.innerHTML = "";
+    this.displayBubble(this.messages.intro);
     this.input.style.display = "none";
 
-    this.btnNext.addEventListener("click", () => this.Next_Question());
-    this.btnPrev.addEventListener("click", () => this.Prev_Question());
+    this.btnNext.addEventListener("click", () => this.nextQuestion());
+    this.btnPrev.addEventListener("click", () => this.prevQuestion());
+
+    this.input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        this.nextQuestion();
+      }
+    });
 
     setTimeout(() => this.displayQuestion(), 1000);
   }
 
-  displayQuestion() {
-    const current = this.questions[this.index];
-    this.chatZone.innerHTML = current.text;
+  displayBubble(text, isUser = false) {
+    const bubble = document.createElement("div");
+    bubble.classList.add("message-bubble");
+    if (isUser) bubble.classList.add("message-user");
+    bubble.textContent = text;
+    this.chatZone.appendChild(bubble);
+    this.chatZone.scrollTop = this.chatZone.scrollHeight;
+  }
+
+  displayTyping() {
+    const typing = document.createElement("div");
+    typing.classList.add("typing");
+    typing.innerHTML = "<span></span><span></span><span></span>";
+    this.chatZone.appendChild(typing);
+    this.chatZone.scrollTop = this.chatZone.scrollHeight;
+    return typing;
+  }
+
+ displayQuestion() {
+  const current = this.questions[this.index];
+  const typing = this.displayTyping();
+
+  setTimeout(() => {
+    typing.remove();
+    this.displayBubble(current.text);
 
     if (current.key === "profile_picture") {
       this.input.style.display = "none";
       this.showPhotoInput();
     } else {
+      if (this.inputPhoto) this.inputPhoto.style.display = "none";
       this.input.style.display = "block";
-      this.input.value = this.responses[current.key] || "";
-    }
-  }
 
-  Question_valide() {
+      if (current.key === "password") {
+        this.input.type = "password";
+      } else {
+        this.input.type = "text";
+      }
+
+      this.input.value = this.responses[current.key] || "";
+      this.input.focus();
+    }
+  }, 600);
+}
+
+
+  questionValide() {
     const { key } = this.questions[this.index];
     const value = this.input.value.trim();
 
-    if (key === "age" && !/^(?:1[5-9]|[2-9][0-9]|\d{3,})$/.test(value)) {
-      this.chatZone.innerHTML = this.messages.errors.age;
+    if (
+      (key === "prenom" || key === "nom" || key === "email") &&
+      value === ""
+    ) {
+      this.displayBubble(`❌ Le champ ${key} est obligatoire.`);
+      return false;
+    }
+
+    if (key === "age" && !/^(?:1[5-9]|[2-9][0-9])$/.test(value)) {
+      this.displayBubble(this.messages.errors.age);
       return false;
     }
 
     if (key === "email" && !/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-      this.chatZone.innerHTML = this.messages.errors.email;
+      this.displayBubble(this.messages.errors.email);
       return false;
     }
 
     return true;
   }
 
-  Next_Question() {
+  nextQuestion() {
     const current = this.questions[this.index];
 
     if (current.key !== "profile_picture") {
-      if (!this.Question_valide()) return;
+      if (!this.questionValide()) return;
       this.responses[current.key] = this.input.value.trim();
+      this.displayBubble(this.input.value.trim(), true);
     }
 
     this.index++;
@@ -99,54 +149,52 @@ class Chatbot {
     }
   }
 
-  Prev_Question() {
+  prevQuestion() {
     if (this.index > 0) {
       this.index--;
       this.displayQuestion();
-      if (this.btnNext.disabled) this.btnNext.disabled = false;
+      this.btnNext.disabled = false;
     }
   }
 
   showPhotoInput() {
-    const inputPhoto = document.createElement("input");
-    inputPhoto.type = "file";
-    inputPhoto.accept = "image/*";
-    inputPhoto.style.marginTop = "10px";
-    inputPhoto.style.display = "block";
-    this.chatZone.appendChild(inputPhoto);
+    if (!this.inputPhoto) {
+      this.inputPhoto = document.createElement("input");
+      this.inputPhoto.type = "file";
+      this.inputPhoto.accept = "image/*";
+      this.inputPhoto.style.marginTop = "10px";
+      this.chatZone.appendChild(this.inputPhoto);
 
-    inputPhoto.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (file) {
+      this.inputPhoto.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
         try {
-          const formData = new FormData();
-          formData.append("file", file);
-
           const res = await fetch("https://back.meetlink.local/upload", {
             method: "POST",
             body: formData,
           });
 
-          if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error("Réponse serveur non JSON : " + errorText);
-          }
+          if (!res.ok) throw new Error("Échec upload");
 
           const data = await res.json();
           this.responses["profile_picture"] = data.path;
-        } catch (error) {
-          console.error("Erreur upload image :", error);
-          this.chatZone.innerHTML += `<br>${this.messages.errors.upload}`;
+          this.displayBubble("📸 Image téléchargée avec succès", true);
+        } catch {
+          this.displayBubble(this.messages.errors.upload);
         }
-      }
-    });
+      });
+    } else {
+      this.inputPhoto.style.display = "block";
+    }
   }
 
   sendData() {
-    this.chatZone.innerHTML = this.messages.end;
+    this.displayBubble(this.messages.end);
     this.btnNext.disabled = true;
-
-    console.log("Profil collecté :", this.responses);
 
     fetch("https://back.meetlink.local/users/create", {
       method: "POST",
@@ -155,13 +203,34 @@ class Chatbot {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log("Réponse API :", result);
-        this.chatZone.innerHTML +=
-          "<br>📬 Ton profil a été enregistré avec succès !";
+        this.displayBubble("📬 Ton profil a été enregistré avec succès !");
+
+        const loginData = {
+          email: this.responses.email,
+          password: this.responses.password,
+        };
+
+        return fetch("https://back.meetlink.local/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginData),
+          credentials: "include",
+        });
+      })
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.success) {
+          window.location.href = "/index";
+        } else {
+          this.displayBubble(
+            result.message || "Identifiants incorrects",
+            false
+          );
+        }
       })
       .catch((err) => {
-        console.error("Erreur finale :", err);
-        this.chatZone.innerHTML += "<br>⚠️ Une erreur est survenue à l’envoi.";
+        console.error("Erreur lors de l'envoi :", err);
+        this.displayBubble("⚠️ Une erreur est survenue. Veuillez réessayer.");
       });
   }
 }

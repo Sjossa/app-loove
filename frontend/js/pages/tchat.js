@@ -4,9 +4,19 @@ import { parseJwt } from "../utils/parse.js";
 export class Tchat {
   constructor(jwt) {
     this.jwt = jwt;
- this.myUserId = parseJwt(jwt)?.id
-    wsClient.connect(this.jwt);
+    this.myUserId = parseJwt(jwt)?.id;
 
+    // DOM
+    this.messagerie = document.querySelector(".messagerie");
+    this.close = document.querySelector(".close");
+    this.liste_contenue = document.querySelector(".liste-contenu");
+    this.send_button = document.querySelector(".send");
+    this.liste_message = document.querySelector(".liste-message");
+    this.list_match = document.querySelector(".list-match");
+    this.noMatchMessage = document.querySelector(".no-match-message");
+    this.headerUser = document.querySelector(".header-conversation p"); // header de la conversation
+
+    wsClient.connect(this.jwt);
     wsClient.onMessage((data) => {
       const currentConvID = this.liste_message.dataset.conversationId;
       if (data.conversationID == currentConvID) {
@@ -19,13 +29,6 @@ export class Tchat {
       }
     });
 
-    this.messagerie = document.querySelector(".messagerie");
-    this.close = document.querySelector(".close");
-    this.liste_contenue = document.querySelector(".liste-contenu");
-    this.send_button = document.querySelector(".send");
-    this.liste_message = document.querySelector(".liste-message");
-    this.list_match = document.querySelector(".list-match");
-
     this.fermeture();
     this.liste();
   }
@@ -35,9 +38,7 @@ export class Tchat {
       this.close.addEventListener("click", () => {
         const isHidden = this.liste_contenue.style.display === "none";
         this.liste_contenue.style.display = isHidden ? "" : "none";
-        this.messagerie.style.gridTemplateColumns = isHidden
-          ? "0.2fr 1fr"
-          : "1fr";
+        this.messagerie.style.gridTemplateColumns = isHidden ? "0.2fr 1fr" : "1fr";
       });
     } else {
       console.error("Erreur : .liste_contenue ou .close est null");
@@ -61,87 +62,71 @@ export class Tchat {
       });
 
       const data = await response.json();
+      this.list_match.innerHTML = "";
 
-      if (data.status === "success" && data.user) {
-        if (data.user) console.table(data.user);
+      if (data.status === "success" && data.user?.length > 0) {
+        this.noMatchMessage?.setAttribute("hidden", true);
+        this.messagerie.style.display = "";
 
-        this.list_match.innerHTML = "";
+        data.user.forEach((user) => {
+          const li = document.createElement("li");
+          li.textContent = `${user.prenom} ${user.nom}`;
+          li.dataset.id = user.id;
+          li.classList.add("match");
 
-        if (data.user.length > 0) {
-          data.user.forEach((user) => {
-            const li = document.createElement("li");
-            li.textContent = user.prenom + " " + user.nom;
-            li.dataset.id = user.id;
-            li.classList.add("match");
-
-            li.addEventListener("click", async () => {
-              await this.conversation(user.id);
-            });
-
-            this.list_match.appendChild(li);
+          li.addEventListener("click", async () => {
+            await this.conversation(user.id, user.prenom, user.nom);
           });
-        } else {
-          this.list_match.innerHTML = "<li>Aucun match trouvé</li>";
-        }
-      } else if (data.status === "empty") {
-        console.log("Aucun match trouvé");
+
+          this.list_match.appendChild(li);
+        });
       } else {
-        throw new Error("Erreur inattendue");
+        this.noMatchMessage?.removeAttribute("hidden");
       }
     } catch (error) {
       console.error("Erreur dans le chargement de la liste", error);
     }
   }
 
-  async conversation(matchID) {
+  async conversation(matchID, prenom, nom) {
     if (!this.liste_message) return;
 
     this.liste_message.innerHTML = "";
 
     try {
-      const response = await fetch(
-        "https://back.meetlink.local/tchat/conversation",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.jwt}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ matchID }),
-        }
-      );
+      const response = await fetch("https://back.meetlink.local/tchat/conversation", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.jwt}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ matchID }),
+      });
 
       const data = await response.json();
 
       if (data) {
-        if (!this.send_button) {
-          console.error("Le bouton envoyer n'existe pas");
-        } else {
-          this.send_button.onclick = () => {
-            const inputElement = document.querySelector(".message-input");
-            if (!inputElement) return;
-
-            const message_value = inputElement.value.trim();
-
-            if (message_value) {
-              this.send(
-                message_value,
-                matchID,
-                data.conversation.conversation_id
-              );
-              inputElement.value = "";
-            }
-          };
+        // Met à jour l'en-tête de la conversation
+        if (this.headerUser) {
+          this.headerUser.textContent = `${prenom} ${nom}`;
+          this.headerUser.dataset.id = `${prenom} ${nom}`;
         }
+
+        this.send_button?.addEventListener("click", () => {
+          const inputElement = document.querySelector(".message-input");
+          const message_value = inputElement?.value.trim();
+
+          if (message_value) {
+            this.send(message_value, matchID, data.conversation.conversation_id);
+            inputElement.value = "";
+          }
+        });
 
         this.afficherMessages(data);
       }
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des conversations :",
-        error
-      );
+      console.error("Erreur lors de la récupération des conversations :", error);
     }
   }
 
@@ -162,8 +147,8 @@ export class Tchat {
       if (data.status === "succes") {
         const messageData = {
           type: "message",
-          conversationID: conversationID,
-          matchID: matchID,
+          conversationID,
+          matchID,
           content: message,
           sender_id: this.myUserId,
           timestamp: Date.now(),
@@ -183,9 +168,7 @@ export class Tchat {
       return;
     }
 
-    this.liste_message.dataset.conversationId =
-      data.conversation?.conversation_id;
-    console.log(data);
+    this.liste_message.dataset.conversationId = data.conversation?.conversation_id;
 
     if (
       data &&
@@ -194,22 +177,14 @@ export class Tchat {
     ) {
       data.conversation.messages.forEach((msg) => {
         const msgID = msg.id || msg.timestamp;
-        if (!msgID) {
-          console.warn("Message sans ID");
-          return;
-        }
-        const exists = this.liste_message.querySelector(
-          `li[data-id="${msgID}"]`
-        );
+        if (!msgID) return;
+
+        const exists = this.liste_message.querySelector(`li[data-id="${msgID}"]`);
         if (!exists) {
           const li = document.createElement("li");
           li.textContent = msg.content || "";
           li.dataset.id = msgID;
-          if (msg.sender_id === this.myUserId) {
-            li.classList.add("my-message");
-          } else {
-            li.classList.add("other-message");
-          }
+          li.classList.add("message-item", msg.sender_id === this.myUserId ? "my-message" : "other-message");
           this.liste_message.appendChild(li);
         }
       });

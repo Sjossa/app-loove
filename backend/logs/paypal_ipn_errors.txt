@@ -158,3 +158,81 @@
 [2025-06-20 07:13:05] ID utilisateur: 3
 [2025-06-20 07:13:06] Réponse PayPal: VERIFIED
 [2025-06-20 07:13:06] Type IPN ignoré: subscr_signup
+[2025-06-20 16:17:05] Données IPN reçues: Array
+(
+    [txn_type] => subscr_signup
+    [subscr_id] => I-9E7CW937ASYX
+    [last_name] => Doe
+    [residence_country] => FR
+    [mc_currency] => EUR
+    [item_name] => Abonnement Premium MeetLink
+    [business] => meetlink@admin.com
+    [recurring] => 1
+    [address_street] => Av. de la Pelouse, 87648672 Mayet
+    [verify_sign] => AmBYOmVPqbgjiC8CQVM0YMY6iUigA3itwmiGrVNWgjHgLlhL1PdUzVaM
+    [payer_status] => verified
+    [test_ipn] => 1
+    [payer_email] => johneeeny.doe@gmail.com
+    [address_status] => unconfirmed
+    [first_name] => John
+    [receiver_email] => meetlink@admin.com
+    [address_country_code] => FR
+    [payer_id] => DGTFLJRB9BZ78
+    [address_city] => Paris
+    [reattempt] => 1
+    [address_state] => Alsace
+    [subscr_date] => 09:16:31 Jun 20, 2025 PDT
+    [address_zip] => 75002
+    [charset] => UTF-8
+    [notify_version] => 3.9
+    [period3] => 1 M
+    [address_country] => France
+    [mc_amount3] => 54.99
+    [address_name] => John Doe
+    [ipn_track_id] => f192832530bd4
+)
+
+[2025-06-20 16:17:05] Données IPN reçues: Array
+(
+    [mc_gross] => 54.99
+    [protection_eligibility] => Eligible
+    [address_status] => confirmed
+    [payer_id] => DGTFLJRB9BZ78
+    [address_street] => Av. de la Pelouse, 87648672 Mayet
+    [payment_date] => 09:16:32 Jun 20, 2025 PDT
+    [payment_status] => Completed
+    [charset] => UTF-8
+    [address_zip] => 75002
+    [first_name] => John
+    [mc_fee] => 2.12
+    [address_country_code] => FR
+    [address_name] => John Doe
+    [notify_version] => 3.9
+    [subscr_id] => I-9E7CW937ASYX
+    [payer_status] => verified
+    [business] => meetlink@admin.com
+    [address_country] => France
+    [address_city] => Paris
+    [verify_sign] => AAZBo41292784GRQg0xxLmq7RGd-AvY2eUpbrJKT4e1tRse6HOlWy.FM
+    [payer_email] => johneeeny.doe@gmail.com
+    [txn_id] => 4HB59320TN283891H
+    [payment_type] => instant
+    [last_name] => Doe
+    [address_state] => Alsace
+    [receiver_email] => meetlink@admin.com
+    [payment_fee] => 
+    [receiver_id] => DN7K2AEPQZFGG
+    [txn_type] => subscr_payment
+    [item_name] => Abonnement Premium MeetLink
+    [mc_currency] => EUR
+    [residence_country] => FR
+    [test_ipn] => 1
+    [transaction_subject] => Abonnement Premium MeetLink
+    [payment_gross] => 
+    [ipn_track_id] => f192832530bd4
+)
+
+[2025-06-20 16:17:06] Réponse PayPal: VERIFIED
+[2025-06-20 16:17:06] Champ 'custom' manquant.
+[2025-06-20 16:17:07] Réponse PayPal: VERIFIED
+[2025-06-20 16:17:07] Type IPN ignoré: subscr_signup
