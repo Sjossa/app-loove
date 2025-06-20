@@ -1,6 +1,4 @@
-Bien sûr Johnny, voici un exemple clair et professionnel pour ton fichier README de **MeetLink**. Tu peux l’adapter selon tes besoins :
 
----
 
 # MeetLink
 
