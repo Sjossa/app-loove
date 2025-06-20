@@ -1,0 +1,57 @@
+<style>
+  .no-match-message {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 1rem;
+    font-size: 1.3rem;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+<div class="no-match-message" hidden>
+  <p>🥲 Vous n'avez pas encore matché avec quelqu’un...</p>
+</div>
+
+<section class="messagerie" aria-label="Messagerie">
+  <aside class="liste-contenu" aria-label="Liste des matchs">
+    <ul class="list-match"></ul>
+  </aside>
+
+  <section class="conversation" aria-live="polite">
+    <header class="header-conversation">
+      <button class="close" aria-label="Fermer la conversation">&larr;</button>
+      <p data-id="">Nom du contact</p>
+      
+      <button aria-label="Paramètres de la conversation">⚙️</button>
+    </header>
+
+    <main class="main-conversation">
+      <ul class="liste-message"></ul>
+    </main>
+
+    <footer class="footer-conversation">
+      <input
+        type="text"
+        name="message"
+        class="message-input"
+        placeholder="Écrire un message..."
+        value=""
+        autocomplete="off"
+      />
+      <button class="send" aria-label="Envoyer le message">Envoyer</button>
+    </footer>
+  </section>
+</section>

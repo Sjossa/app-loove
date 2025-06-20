@@ -1,0 +1,15 @@
+
+/* 1. Styles globaux*/
+@import url('Fixe/global.css');
+
+/* 2. Composants principaux */
+@import url('component/primary.css');
+
+/* 3. Composants secondaires */
+@import url('component/secondary.css');
+
+/* 4. Classes utilitaires */
+@import url('component/utulity.css');
+
+
+

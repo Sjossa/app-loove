@@ -1,27 +1,51 @@
-<header class="text_menu a">
-  <nav>
-    <ul class="flex-row">
-      <li>
-        <a href="index">
-          <img class="logo" src="/images/logo.png" alt="logo MeetLink" />
-        </a>
-      </li>
-      <li><a href="profil">profil</a></li>
-      <li><a href="">Hackathon</a></li>
-      <li><a href="">Contact</a></li>
-      <li><button class="connexion">connexion</button></li>
-    </ul>
-  </nav>
-</header>
 
-<div id="modalConnexion" class="hidden">
-  <div class="modal-content">
-    <span class="close-btn">x</span>
-    <h2>Connexion</h2>
-    <form method="post" action="index">
-      <input type="email" placeholder="Email" required /><br />
-      <input type="password" placeholder="Mot de passe" required /><br />
-      <button type="submit">Se connecter</button>
-    </form>
+
+<nav class="header-nav">
+
+  <button class="burger" aria-label="Menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+  <ul class="header-nav-list">
+  </ul>
+</nav>
+<div id="messageBox" class="message"></div>
+
+<!-- Modal de connexion -->
+<div id="login-modal" class="modal hidden">
+  <div class="modal-container">
+    <button class="modal-close" aria-label="Fermer">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Connexion</h2>
+    </div>
+    <div class="modal-body">
+      <form method="post" class="login-form">
+        <div class="form-group">
+          <input
+            type="email"
+            placeholder="Email"
+            id="login-email"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            id="login-password"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-full">
+            Se connecter
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -1,12 +1,25 @@
 <?php
 
+namespace backend\config;
+
+use PDO;
+use PDOException;
+
 class Database
 {
-  private $host = 'localhost';
-  private $dbname = 'meetlink';
-  private $username = 'root';
-  private $password = '';
+  private $host;
+  private $dbname;
+  private $username;
+  private $password;
   private $conn = null;
+
+  public function __construct()
+  {
+    $this->host = $_ENV["DB_HOST"];
+    $this->dbname = $_ENV["DB_NAME"];
+    $this->username = $_ENV["DB_USER"];
+    $this->password = $_ENV["DB_PASSWORD"];
+  }
 
   public function getConnection()
   {

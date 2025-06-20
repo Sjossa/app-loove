@@ -1,22 +1,63 @@
-<section>
-  <div>
-    <div>
-      <img src="" alt="" />
-    </div>
-    <div>
-      <form action="">
-        <input type="text" name="prenom_nom" />
-        <input type="text" name="role" />
-        <p></p>
-        <div>
-          <div>
-            <input type="text" name="github" />
-          </div>
-          <div>
-            <input type="text" name="competence" />
-          </div>
+<section id="profile-page">
+  <div class="profile-container">
+    <!-- Colonne gauche : photo -->
+    <img src="https://via.placeholder.com/400" alt="Photo de profil" class="profile-picture" data-user="profile_picture" />
+    
+
+    <!-- Colonne droite : tout le contenu -->
+    <div class="profile-content">
+      <div class="profile-header">
+        <div class="basic-info">
+          <h1>
+            <input type="text" data-user="prenom" placeholder="Prénom" />
+            <input type="text" data-user="nom" placeholder="Nom" />
+          </h1>
+          <h2>
+            <input type="number" data-user="age" placeholder="Âge" />
+          </h2>
+          <p class="signature">
+            Je code avec le cœur, et parfois en dark mode.
+          </p>
         </div>
-      </form>
+      </div>
+
+      <div class="profile-details">
+        <div class="section" id="personal-info">
+          <h4>👤 Infos personnelles</h4>
+          <ul>
+            <li><strong>Localisation :</strong> <input type="text" data-user="localisation" placeholder="Localisation" /></li>
+            <li><strong>Statut :</strong> <input type="text" data-user="statut" placeholder="Statut" /></li>
+            <li><strong>Orientation :</strong> <input type="text" data-user="orientation" placeholder="Orientation" /></li>
+            <li><strong>Relation recherchée :</strong> <input type="text" data-user="relation_recherchee" placeholder="Relation recherchée" /></li>
+          </ul>
+        </div>
+
+        <div class="section" id="interests">
+          <h4>💻 Centres d’intérêt</h4>
+          <ul>
+            <li><input type="text" value="📚 Les cafés code en binôme" disabled /></li>
+            <li><input type="text" value="🎮 Les soirées Codage + Mario Kart" disabled /></li>
+            <li><input type="text" value="🧠 Veille techno avec chocolat chaud" disabled /></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="profile-bio">
+        <div class="section" id="bio">
+          <h4>💌 Bio</h4>
+          <textarea data-user="bio" placeholder="Écris ta bio..."></textarea>
+        </div>
+
+        <div class="section" id="petit-plus">
+          <h4>💖 Petit plus</h4>
+          <textarea data-user="petit_plus" placeholder="Un petit plus à savoir..."></textarea>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button id="modifier">✏️ Modifier</button>
+        <button id="deconnexion">🚪 Déconnexion</button>
+      </div>
     </div>
   </div>
 </section>

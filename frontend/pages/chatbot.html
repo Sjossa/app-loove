@@ -1,8 +1,35 @@
-<section>
-  <div id="zone_chat"></div>
- <button id="next">aaaaaaa</button>
- <button id="previous">retour</button>
- <input type="text" name="" id="user_input">
+<section class="zone">
+  <div class="chatbot">
+    <!-- Image du chatbot -->
+    <img src="../images/chatbot.webp" alt="Chatbot MCLink" />
+
+    <div class="dialogue">
+      <!-- Zone de chat où s'affichent les messages -->
+      <div id="zone_chat" aria-live="polite" aria-atomic="true"></div>
+
+      <!-- Input utilisateur -->
+      <input
+        type="text"
+        id="user_input"
+        name="user_input"
+        placeholder="Écris ta réponse ici..."
+        autocomplete="off"
+        aria-label="Votre réponse"
+      />
+
+      <!-- Boutons de navigation -->
+      <div class="button-group">
+        <button
+          id="previous"
+          type="button"
+          aria-label="Retour à la question précédente"
+        >
+          Retour
+        </button>
+        <button id="next" type="button" aria-label="Question suivante">
+          Suivant
+        </button>
+      </div>
+    </div>
+  </div>
 </section>
-
-
