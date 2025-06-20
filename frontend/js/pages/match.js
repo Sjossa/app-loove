@@ -1,12 +1,15 @@
 export class Match {
   constructor(jwt) {
     this.jwt = jwt;
-    this.profil = document.querySelector("#match_profil");
+    this.profil = document.querySelector("#match-profil");
     this.btn_profil = document.querySelector("#btn_profil");
-    this.match_ok = document.querySelector("#match");
+    this.card = document.querySelector(".card");
+    this.match = document.querySelector("#match");
     this.btn_choix = document.querySelector("#choix");
     this.matchBtn = document.querySelector(".matchbtn");
     this.skipBtn = document.querySelector(".skip");
+    this.info = document.querySelector(".card-info");
+    this.btnprofil = document.querySelector(".btnprofil");
 
     if (this.matchBtn) {
       this.matchBtn.disabled = true;
@@ -44,11 +47,28 @@ export class Match {
   visibility() {
     if (this.btn_profil) {
       this.btn_profil.addEventListener("click", () => {
-        const isVisible = this.profil.style.visibility === "visible";
-        this.profil.style.visibility = isVisible ? "hidden" : "visible";
+        const isHidden = this.profil.hasAttribute("hidden");
+        this.profil.toggleAttribute("hidden");
+        this.btn_profil.setAttribute("aria-expanded", String(!isHidden));
+
+        if (this.match && this.card) {
+          if (isHidden) {
+            this.match.classList.add("grid-mode");
+            this.card.classList.add("card-grid-mode");
+            this.card.classList.remove("card");
+            this.info.style.display = "none";
+           if (this.btn_choix.id === "choix") {
+    this.btn_choix.id = "choix-gride";
+  }
+
+          } else {
+            // Réinitialisation
+            this.match.classList.remove("grid-mode");
+            this.card.classList.remove("card-grid-mode");
+            this.card.classList.add("card");
+          }
+        }
       });
-    } else {
-      // console.log("Élément 'btn_profil' introuvable !");
     }
   }
 
@@ -92,17 +112,31 @@ export class Match {
   }
 
   displayInfo(user) {
-    const fields = ["prenom", "age", "localisation", "bio"];
+    const fields = [
+      "prenom",
+      "age",
+      "localisation",
+      "bio",
+      "statut",
+      "orientation",
+      "relation_recherchee",
+      "interets",
+      "petit_plus",
+    ];
 
     fields.forEach((field) => {
-      const element = document.querySelector(`[data-user="${field}"]`);
-      if (element) {
-        element.textContent =
-          field === "age" ? `${user[field]} ans` : user[field] || "";
-      }
+      const elements = document.querySelectorAll(`[data-user="${field}"]`);
+      elements.forEach((element) => {
+        if (element) {
+          element.textContent =
+            field === "age"
+              ? `${user[field]} ans`
+              : user[field] || "Non renseigné";
+        }
+      });
     });
 
-    const img = document.querySelector("#card img");
+    const img = document.querySelector(".card__image");
     if (img && user.profile_picture) {
       img.src = `../images/${user.profile_picture}`;
       img.alt = `Photo de profil de ${user.prenom}`;

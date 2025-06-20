@@ -22,7 +22,7 @@ class SimpleRouter {
   }
 
   async init() {
-    await this.loadComponent("header", "/components/header.html");
+    await this.loadComponent("Header", "/components/header.html");
 
     this.jwt = await this.checkJWT();
 
@@ -162,7 +162,7 @@ class SimpleRouter {
         case "index_off": {
           const module = await import("./pages/index.js");
           const { Carousel } = module;
-          new Carousel(); 
+          new Carousel();
           break;
         }
 
@@ -214,8 +214,8 @@ class SimpleRouter {
 
   async loadHeaderOnce() {
     if (!this.headerInstance) {
-      const { headers: Headers } = await import("./pages/header.js");
-      this.headerInstance = new Headers(this.jwt);
+      const {  Header } = await import("./pages/header.js");
+      this.headerInstance = new Header(this.jwt);
     }
   }
 }

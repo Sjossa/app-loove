@@ -6,7 +6,7 @@ use PDO;
 use PDOException;
 
 
-class paypal
+class Paypal
 {
 
   private $db;

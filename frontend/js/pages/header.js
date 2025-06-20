@@ -1,122 +1,202 @@
 import { wsClient } from "../utils/WebSocket.js";
 
-export class headers {
+export class Header {
   constructor(jwt) {
     this.jwt = jwt;
 
-    wsClient.connect(this.jwt);
-    wsClient.onMessage((data) => {
-      if (!data?.type) return;
-
-      switch (data.type) {
-        case "message":
-          this.newNotif("nouveau message");
-
-          break;
-
-        case "match":
-          this.newNotif("match");
-          break;
-
-        case "like":
-          this.newNotif("like");
-          break;
-
-        default:
-          break;
-      }
-    });
-
+    // Sélecteurs DOM principaux
     this.nav = document.querySelector(".header-nav-list");
+    this.burger = document.querySelector(".burger");
     this.modal = document.getElementById("login-modal");
-    this.closeBtn = this.modal.querySelector(".modal-close");
+    this.closeBtn = this.modal?.querySelector(".modal-close");
     this.input_mail = document.querySelector("#login-email");
     this.input_password = document.querySelector("#login-password");
-    this.form = this.modal.querySelector("form");
+    this.form = this.modal?.querySelector("form");
     this.messageBox = document.querySelector("#messageBox");
 
+    this.notificationbtn = null;
+
+    // Initialisation contenu et événements
+    this.contenu();
     this.initEvents();
+
+    // Connexion WebSocket et gestion messages entrants
+    wsClient.connect(this.jwt);
+    wsClient.onMessage((data) => this.handleWsMessage(data));
   }
 
- contenu() {
-  this.nav.innerHTML = "";
+  contenu() {
+    if (!this.nav) return;
+    this.nav.innerHTML = "";
 
-  const conteneur_logo = document.createElement("a");
-  conteneur_logo.href = "index";
-  conteneur_logo.className = "header-nav-link";
+    // Logo
+    const logoLink = document.createElement("a");
+    logoLink.href = "index";
+    logoLink.className = "header-nav-link";
 
-  const logo = document.createElement("img");
-  logo.className = "header-logo";
-  logo.src = "/images/logo.png";
-  logo.alt = "logo meetlink";
+    const logoImg = document.createElement("img");
+    logoImg.className = "header-logo";
+    logoImg.src = "/images/logo.png";
+    logoImg.alt = "logo meetlink";
 
-  conteneur_logo.appendChild(logo);
+    logoLink.appendChild(logoImg);
 
-  const logoItem = document.createElement("li");
-  logoItem.className = "header-nav-item";
-  logoItem.appendChild(conteneur_logo);
-  this.nav.appendChild(logoItem);
+    const logoItem = document.createElement("li");
+    logoItem.className = "header-nav-item";
+    logoItem.appendChild(logoLink);
+    this.nav.appendChild(logoItem);
 
-  if (this.jwt) {
-    const payload = JSON.parse(atob(this.jwt.split('.')[1]));
-    const role = payload.role;
+    // Liens en fonction du rôle
+    if (this.jwt) {
+      const payload = JSON.parse(atob(this.jwt.split(".")[1]));
+      const role = payload.role;
 
-    let links = [];
+      let links = [];
 
-    if (role === "admin") {
-      links = [
-        { text: "Admin", href: "/admin" },
-        { text: "Utilisateurs", href: "admin_users" },
-      ];
+      if (role === "admin") {
+        links = [
+          { text: "Admin", href: "/admin" },
+          { text: "Utilisateurs", href: "admin_users" },
+        ];
+      } else {
+        links = [
+          { text: "Profil", href: "profil" },
+          { text: "Message", href: "tchat" },
+          { text: "Matchs", href: "match_liste" },
+        ];
+      }
+
+      links.forEach(({ text, href }) => {
+        const li = document.createElement("li");
+        li.className = "header-nav-item";
+
+        const link = document.createElement("a");
+        link.href = href;
+        link.className = "header-nav-link";
+        link.textContent = text;
+
+        li.appendChild(link);
+        this.nav.appendChild(li);
+      });
+
+      // Bouton notification
+      const notificationBtn = document.createElement("button");
+      notificationBtn.className = "notification";
+      notificationBtn.textContent = "🔔";
+      this.nav.appendChild(notificationBtn);
+      this.notificationbtn = notificationBtn;
     } else {
-      links = [
-        { text: "Profil", href: "profil" },
-        { text: "Message", href: "tchat" },
-        { text: "Matchs", href: "match_liste" },
-      ];
+      // Bouton connexion
+      const li = document.createElement("li");
+      li.className = "header-nav-item nav-cta";
+
+      const button = document.createElement("button");
+      button.className = "header-login";
+      button.textContent = "Connexion";
+
+      li.appendChild(button);
+      this.nav.appendChild(li);
+    }
+  }
+
+  initEvents() {
+    // Burger toggle menu
+    if (this.burger && this.nav) {
+      this.burger.addEventListener("click", () => {
+        this.burger.classList.toggle("active");
+        this.nav.classList.toggle("active");
+      });
     }
 
-    links.forEach((item) => {
-      const li = document.createElement("li");
-      li.className = "header-nav-item";
+    // Ouvrir modal connexion
+    this.openBtn = document.querySelector(".header-login");
+    if (this.openBtn) {
+      this.openBtn.addEventListener("click", () => this.open());
+    }
 
-      const link = document.createElement("a");
-      link.href = item.href;
-      link.className = "header-nav-link";
-      link.textContent = item.text;
+    // Fermer modal
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener("click", () => this.close());
+    }
 
-      li.appendChild(link);
-      this.nav.appendChild(li);
+    // Envoi formulaire connexion
+    if (this.form) {
+      this.form.addEventListener("submit", (event) => this.send(event));
+    }
+
+    // Fermer menu quand on clique sur un lien (UX mobile)
+    const links = this.nav.querySelectorAll(".header-nav-link");
+    links.forEach((link) => {
+      link.addEventListener("click", () => {
+        if (this.burger.classList.contains("active")) {
+          this.burger.classList.remove("active");
+          this.nav.classList.remove("active");
+        }
+      });
     });
 
-    const notification = document.createElement("button");
-    notification.className = "notification";
-    notification.textContent = "🔔";
-    this.nav.appendChild(notification);
-    this.notificationbtn = notification;
-
-  } else {
-    const li = document.createElement("li");
-    li.className = "header-nav-item nav-cta";
-
-    const button = document.createElement("button");
-    button.className = "header-login";
-    button.textContent = "Connexion";
-
-    li.appendChild(button);
-    this.nav.appendChild(li);
+    // Clic sur notification
+    if (this.notificationbtn) {
+      this.notificationbtn.addEventListener("click", () => {
+        this.clearNotif();
+        this.open();
+      });
+    }
   }
-}
 
+  handleWsMessage(data) {
+    if (!data?.type) return;
+
+    switch (data.type) {
+      case "message":
+        this.newNotif("Nouveau message");
+        break;
+
+      case "match":
+        this.newNotif("Nouveau match");
+        break;
+
+      case "like":
+        this.newNotif("Nouveau like");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  newNotif(text) {
+    if (!this.notificationbtn) return;
+
+    this.notificationbtn.classList.add("activee");
+    this.notificationbtn.title = text;
+
+    let badge = this.notificationbtn.querySelector(".notif-badge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "notif-badge";
+      this.notificationbtn.appendChild(badge);
+    }
+
+    let count = parseInt(badge.textContent) || 0;
+    badge.textContent = count + 1;
+  }
+
+  clearNotif() {
+    if (!this.notificationbtn) return;
+    this.notificationbtn.classList.remove("activee");
+    const badge = this.notificationbtn.querySelector(".notif-badge");
+    if (badge) badge.remove();
+  }
 
   open() {
-    this.modal.classList.remove("hidden");
+    this.modal?.classList.remove("hidden");
     this.clearForm();
     this.clearMessage();
   }
 
   close() {
-    this.modal.classList.add("hidden");
+    this.modal?.classList.add("hidden");
   }
 
   send(event) {
@@ -129,93 +209,39 @@ export class headers {
 
     fetch("https://back.meetlink.local/users/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
       credentials: "include",
     })
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((result) => {
         if (result.success) {
-          window.location.href = "/index";
-
           this.close();
+          window.location.href = "/index";
         } else {
-          this.showMessage(
-            result.message || "Identifiants incorrects",
-            "error"
-          );
+          this.showMessage(result.message || "Identifiants incorrects", "error");
         }
       })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi :", error);
-        this.showMessage(
-          "Une erreur est survenue. Veuillez réessayer.",
-          "error"
-        );
+      .catch((err) => {
+        console.error("Erreur lors de l'envoi :", err);
+        this.showMessage("Une erreur est survenue. Veuillez réessayer.", "error");
       });
   }
 
   showMessage(message, type) {
-    if (this.messageBox) {
-      this.messageBox.textContent = message;
-      this.messageBox.className = `message ${type}`;
-    }
+    if (!this.messageBox) return;
+    this.messageBox.textContent = message;
+    this.messageBox.className = `message ${type}`;
   }
 
   clearMessage() {
-    if (this.messageBox) {
-      this.messageBox.textContent = "";
-      this.messageBox.className = "";
-    }
+    if (!this.messageBox) return;
+    this.messageBox.textContent = "";
+    this.messageBox.className = "";
   }
 
   clearForm() {
-    this.input_mail.value = "";
-    this.input_password.value = "";
-  }
-
-  initEvents() {
-    this.contenu();
-    this.openBtn = document.querySelector(".header-login");
-
-    if (this.openBtn) {
-      this.openBtn.addEventListener("click", () => this.open());
-    }
-    if (this.closeBtn) {
-      this.closeBtn.addEventListener("click", () => this.close());
-    }
-    if (this.form) {
-      this.form.addEventListener("submit", (event) => this.send(event));
-    }
-  }
-
-  newNotif(texte) {
-    if (!this.notificationbtn) return;
-    const notifSave = (localStorage.getItem("notifications")) || [];
-
-    notifSave
-    this.notificationbtn.classList.add("active");
-    this.notificationbtn.title = texte;
-
-    let badge = this.notificationbtn.querySelector(".notif-badge");
-    if (!badge) {
-      badge = document.createElement("span");
-      badge.className = "notif-badge";
-      this.notificationbtn.appendChild(badge);
-    }
-
-    let count = parseInt(badge.textContent) || 0;
-    badge.textContent = count + 1;
-
-    this.notificationbtn.addEventListener("click", () => {
-      this.notificationbtn.classList.remove("active");
-      if (badge) {
-    badge.remove();
-    this.open()
-  }
-
-    });
+    if (this.input_mail) this.input_mail.value = "";
+    if (this.input_password) this.input_password.value = "";
   }
 }

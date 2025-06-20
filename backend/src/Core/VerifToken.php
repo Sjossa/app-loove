@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\core;
+namespace backend\Core;
 
 use backend\Core\SessionManager;
 use Firebase\JWT\JWT;

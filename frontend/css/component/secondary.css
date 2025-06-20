@@ -1,153 +1,429 @@
+/* === GLOBAL STYLES === */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #0d0f1c;
+  color: #ffffff;
+}
 
-
-
-
-
-
-
-/* === PROFILS === */
-#profil_page {
+/* === PAGE CONTAINER === */
+#profile-page {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  padding: 16px 20px;
+}
+
+.profile-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+
+  width: 100%;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-  border-radius: 12px;
-  margin: 10px 10px;
+  border-radius: 16px;
+  padding: 30px;
+
+  align-items: stretch; /* Important : même hauteur pour les colonnes */
 }
 
-#profil_page input{
-  /* background-color: transparent; */
-  font-size: 3rem;
-  border: none;
-}
-
-#profil_info {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin: 10px;
-  justify-content: center;
-  align-items: stretch;
-  height: 100%;
-}
-
-#profil_bio {
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
-  justify-content: center;
-}
-
-#profil_info img {
-  max-width: 400px;
+.profile-picture {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
+  height: 100%; /* Remplit toute la hauteur de la colonne */
+  border-radius: 12px;
+  object-fit: cover; /* Remplit en recadrant, pas de déformation */
+  border: 3px solid #f0ba7a;
+  justify-self: stretch; /* Étire horizontalement */
+  align-self: stretch; /* Étire verticalement */
 }
 
-#info_base {
+/* Contenu dans la colonne droite */
+.profile-content {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  text-align: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-#info_secondaire {
-  display: flex;
-  flex-direction: row;
-  margin-top: 30px;
   gap: 40px;
-  justify-content: center;
 }
 
-#extra_info,
-#bio,
-#info_perso,
-#info_aime {
+/* === HEADER (basic info) === */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.basic-info h1 input,
+.basic-info h2 input {
+  font-size: 2rem;
+  background: transparent;
+  border: none;
+  color: #fff;
+  border-bottom: 1px solid #f0ba7a;
+  margin-right: 10px;
+  width: auto;
+  max-width: 300px;
+}
+
+.signature {
+  font-style: italic;
+  margin-top: 10px;
+  color: #ccc;
+  font-size: 1rem;
+}
+
+/* === DETAILS SECTIONS (infos + centres d’intérêt) === */
+.profile-details {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.section {
+  background-color: #1a1d2f;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
   width: 100%;
-  background-color: #0f1222;
+  max-width: 400px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-#extra_info h4,
-#bio h4,
-#info_perso h4,
-#info_aime h4 {
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 15px;
+.section h4 {
   border-left: 4px solid #f0ba7a;
   padding-left: 10px;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #f0ba7a;
 }
 
-#info_perso ul,
-#info_aime ul {
+.section ul {
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-left: 0;
-  list-style: none;
 }
 
+.section li input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #666;
+  color: #fff;
+  font-size: 1rem;
+}
 
+.section li input:disabled {
+  color: #aaa;
+}
 
+/* === BIO & PETIT PLUS === */
+.profile-bio {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.profile-bio textarea {
+  width: 100%;
+  min-height: 100px;
+  background-color: #101222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+/* === ACTION BUTTONS === */
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.profile-actions button {
+  background-color: #f0ba7a;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.profile-actions button:hover {
+  background-color: #e0a65f;
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 768px) {
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .profile-picture {
+    max-width: 200px;
+    margin: 0 auto 30px;
+  }
+
+  .profile-content {
+    width: 100%;
+  }
+
+  .profile-details,
+  .profile-bio {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section {
+    max-width: 90%;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
 
 /* === BOUTONS DE CHOIX (MATCH/SKIP) === */
 
-
-
-/*messagerie*/
-
-.messagerie{
-  display: grid;
-  grid-template-columns: 0.3FR 1FR;
-  height: 100vh;
+/* ======= Reset ======= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+/* ======= Conteneur principal ======= */
+.messagerie {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: none; /* Suppression background */
+}
 
+/* ======= Liste des conversations (matchs) ======= */
+.liste-contenu {
+  width: 30%;
+  background: rgba(20, 25, 35, 0.8); /* Fond sombre semi-transparent */
+  backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  overflow-y: auto;
+  padding: 1rem;
+  color: #eee;
+  font-weight: 500;
+}
 
-.conversation{
+.list-match {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  background-color: #d49e5a;
-  flex: 1;
+  gap: 0.6rem;
 }
 
-.header_conversation{
+.match {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  background-color: #131314;
-  color: red;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background-color: #2a2f42;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+  color: #ddd;
+  font-weight: 600;
+  user-select: none;
 }
+
+.match:hover {
+  background-color: #4c539f;
+  color: white;
+  transform: scale(1.03);
+}
+
+.match::before {
+  content: "💬";
+  font-size: 1.2rem;
+}
+
+/* ======= Zone de conversation ======= */
+.conversation {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff9f1; /* Fond clair chaud pour contraste */
+  color: #222;
+  box-shadow: inset 0 0 10px #d4b278aa;
+}
+
+/* ======= En-tête ======= */
+.header-conversation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #083566;
+  color: white;
+  padding: 1rem;
+  font-weight: bold;
+  user-select: none;
+}
+
+.header-conversation button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.header-conversation button:hover {
+  color: #a0c4ff;
+}
+
+/* ======= Corps de la conversation ======= */
+.main-conversation {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #a18c5f transparent;
+}
+
+.main-conversation::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-conversation::-webkit-scrollbar-thumb {
+  background-color: #a18c5f;
+  border-radius: 4px;
+}
+
+/* Liste des messages */
+.liste-message {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* ======= Messages ======= */
+.message-item {
+  max-width: 70%;
+  padding: 0.7rem 1.1rem;
+  border-radius: 16px;
+  word-wrap: break-word;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  position: relative;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+}
+
+.my-message {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.6);
+}
+
+.other-message {
+  align-self: flex-start;
+  background-color: #e6e6e6;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 3px 8px rgba(150, 150, 150, 0.3);
+}
+
+/* ======= Pied de conversation ======= */
+.footer-conversation {
+  display: flex;
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+.message-input {
+  flex-grow: 1;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.message-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
+.send {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.8rem 1.2rem;
+  margin-left: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.send:hover {
+  background-color: #0056b3;
+}
+
+/* ======= Responsive (Mobile) ======= */
+@media (max-width: 768px) {
+  .messagerie {
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .liste-contenu {
+    width: 100%;
+    height: 220px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255 255 255 / 0.15);
+    background: rgba(20, 25, 35, 0.9);
+    backdrop-filter: blur(15px);
+  }
+
+  .conversation {
+    height: calc(100vh - 220px);
+  }
+
+  .message-item {
+    max-width: 85%;
+  }
+}
+
+
 /* =============================
    === SECTIONS DE L’INDEX ===
    ============================= */
 
 /* Section 1 - Hero */
 
-
-
 /*chatbot*/
-.zone{
+.zone {
   display: flex;
- justify-content: center;
-align-items: center;
-height: 100dvh;
-overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  overflow: hidden;
 }
 
-.chatbot{
+.chatbot {
   overflow: hidden;
   display: grid;
   grid-template-columns: 0.1fr 1fr;
@@ -156,33 +432,30 @@ overflow: hidden;
   border: #f0ba7a solid 1px;
   width: 850px;
   height: 500px;
-
 }
 
-.chatbot > img{
+.chatbot > img {
   width: 300px;
   border-radius: 50px;
   margin: 10px;
 }
 
-.dialogue{
+.dialogue {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
 }
 
-
-#zone_chat{
+#zone_chat {
   font-size: 2rem;
   margin: 10px;
 }
 
-#user_input{
+#user_input {
   width: 300px;
   margin-top: 20px;
   border-radius: 20px;
   height: 50px;
   font-size: 1rem;
 }
-

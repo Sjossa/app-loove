@@ -20,7 +20,8 @@ class TchatController
     header('Content-Type: application/json');
 
     try {
-      $currentUserId = VerifToken::verifyToken();
+      $currentUser = VerifToken::verifyToken();
+      $currentUserId = (int)$currentUser->id;
 
       $user = $this->Tchat->Tchat_liste($currentUserId);
 
@@ -50,7 +51,9 @@ class TchatController
     header('Content-Type: application/json');
 
     try {
-      $currentUserId = VerifToken::verifyToken();
+       $currentUser = VerifToken::verifyToken();
+      $currentUserId = (int)$currentUser->id;
+
       $verif = json_decode(file_get_contents('php://input'), true);
 
       if (!isset($verif['matchID'])) {
@@ -87,7 +90,8 @@ class TchatController
   {
     header('Content-Type: application/json');
     try {
-      $currentUserId = VerifToken::verifyToken();
+       $currentUser = VerifToken::verifyToken();
+      $currentUserId = (int)$currentUser->id;
       $verif = json_decode(file_get_contents('php://input'), true);
 
       if (!isset($verif['message'], $verif['matchID'], $verif['conversationID'])) {

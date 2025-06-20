@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\Models;
+namespace backend\models;
 
 use PDO;
 

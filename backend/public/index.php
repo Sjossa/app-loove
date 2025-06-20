@@ -37,7 +37,7 @@ $dotenv->load();
 // --------------------------------------------
 
 
-$allowed_origin = 'https://meetlink.local'; // domaine frontend
+$allowed_origin = 'https://meetlink.local'; 
 
 if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === $allowed_origin) {
   header("Access-Control-Allow-Origin: $allowed_origin");
@@ -46,7 +46,6 @@ if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === $allowed_origi
   header("Access-Control-Allow-Credentials: true");
 }
 
-// Réponse directe aux requêtes OPTIONS (prévols CORS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   http_response_code(200);
   exit();

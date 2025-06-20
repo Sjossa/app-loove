@@ -1,9 +1,42 @@
 <style>
-  .paypal {
-    display: none;
-  }
+  .user-card {
+  width: 300px;
+  height: 200px;
+  margin: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+}
+
+.user-card-content {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  color: white;
+}
+
+.user-info {
+  position: absolute;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  padding: 10px;
+}
+
 </style>
-<form
+
+
+<div id="paypal" class="modal " hidden>
+  <div class="modal-container">
+    <button class="modal-close" aria-label="Fermer">×</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Connexion</h2>
+    </div>
+    <div class="modal-body">
+     <form
   action="https://www.sandbox.paypal.com/cgi-bin/webscr"
   method="post"
   class="paypal"
@@ -29,20 +62,23 @@
   <!-- Paiement récurrent (1 = oui) -->
   <input type="hidden" name="src" value="1" />
 
-  <!-- ✅ Redirection si paiement réussi -->
+
   <input
     type="hidden"
     name="notify_url"
-    value="https://c299-2a01-cb00-829a-fd00-954-e4bc-6b12-6a78.ngrok-free.app/paypal/ipn"
+    value="https://c9d7-2a01-cb00-829a-fd00-6280-b98b-7851-80a4.ngrok-free.app/paypal/ipn"
   />
 
-  <input type="hidden" name="return" value="https://meetlink.local/" />
+  <input type="hidden" name="return" value="https://meetlink.local/match_liste" />
   <input class="token" type="hidden" name="custom" value="" />
 
-  <!-- ✅ Redirection si l'utilisateur annule -->
+
   <input type="hidden" name="cancel_return" value="https://meetlink.local/" />
 
   <input type="submit" value="S'abonner avec PayPal" />
 </form>
-<div class="liste-matches"></div>
+    </div>
+  </div>
+</div>
 
+<div class="liste-matches"></div>

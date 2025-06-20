@@ -2,66 +2,86 @@ import { parseJwt } from "../utils/parse.js";
 
 export class Match_liste {
   constructor(jwt) {
-    this.paypal = document.querySelector(".paypal");
-    this.token = document.querySelector(".token");
+    this.paypalForm = document.querySelector(".paypal");
+    this.tokenInput = document.querySelector(".token");
     this.jwt = jwt;
+    this.modal = document.querySelector("#paypal");
+    this.closeBtn = this.modal.querySelector(".modal-close");
+    this.matchContainer = document.querySelector(".liste-matches");
 
     this.abs = this.jwt ? parseJwt(this.jwt).abonnement : null;
-    console.log(this.abs);
+    console.log("Abonnement:", this.abs);
 
     this.abonnement();
+
+    // Event pour fermer la modale
+    this.closeBtn.addEventListener("click", () => {
+      this.modal.setAttribute("hidden", "");
+    });
   }
 
- async abonnement() {
-  if (this.abs === false) {
-    this.paypal.style.display = "block";
-    this.jeton();
-  } else {
+  async abonnement() {
     try {
-      // ✅ Récupère l'ID depuis le JWT
       const id = parseJwt(this.jwt).id;
 
-      const response = await fetch(
-        "https://back.meetlink.local/match/likeWait",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.jwt}`,
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ id }),
-        }
-      );
+      const response = await fetch("https://back.meetlink.local/match/likeWait", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.jwt}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ id }),
+      });
 
       const data = await response.json();
       console.log(data);
-      const container = document.querySelector('.liste-matches');
-container.innerHTML = ''; // on vide le conteneur avant d'ajouter du contenu
 
-data.forEach(user => {
-  const userCard = document.createElement('div');
-  userCard.classList.add('user-card');
+      this.matchContainer.innerHTML = "";
 
-  userCard.innerHTML = `
-    <p class="user-name">${user.prenom}</p>
-  `;
+      data.forEach((user) => {
+        const userCard = document.createElement("div");
+        userCard.classList.add("user-card");
 
-  container.appendChild(userCard);
-});
+        userCard.innerHTML = `
+          <div class="user-card-content" style="background-image: url('https://back.meetlink.local/${user.profile_picture}');">
+            <div class="user-info">
+              <h3>${user.prenom} ${user.nom}</h3>
+              <p>Âge : ${user.age ?? "Non renseigné"}</p>
+              <p>Localisation : ${user.localisation ?? "Non renseignée"}</p>
+            </div>
+          </div>
+        `;
 
+        this.matchContainer.appendChild(userCard);
+      });
+
+      if (this.abs === false) {
+        this.matchContainer.style.filter = "none";
+        this.modal.setAttribute("hidden", "");
+
+      } else {
+        this.matchContainer.style.filter = "blur(5px)";
+        this.modal.setAttribute("hidden", "");
+        
+
+
+        this.matchContainer.addEventListener("click", () => {
+          this.modal.removeAttribute("hidden");
+        }, { once: true });
+
+        this.jeton();
+      }
     } catch (error) {
       console.error("Erreur fetch:", error);
     }
   }
-}
-
 
   jeton() {
-    if (this.token) {
-      this.token.value = this.jwt;
+    if (this.tokenInput) {
+      this.tokenInput.value = this.jwt;
     } else {
-      alert("non");
+      alert("Token manquant");
     }
   }
 }

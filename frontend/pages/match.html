@@ -1,50 +1,90 @@
 <section id="match" aria-label="Profil à matcher">
   <div class="card">
+    <!-- Image de profil -->
     <img
       src="../images/amadou.jpg"
       alt="Photo de profil d'Amadou"
       class="card__image"
     />
 
-    <div class="card__info-base">
-      <div class="card__info-un">
-        <p data-user="prenom" class="user-prenom">Prénom</p>
-        <p data-user="age" class="user-age">23 ans</p>
-      </div>
+    <!-- Infos superposées sur l'image -->
+    <div class="card-info">
+      <!-- Prénom et âge -->
+      <p class="user-prenom">
+        <span data-user="prenom"></span>,
+        <span data-user="age" class="user-age"></span>
+      </p>
 
-      <div class="localisation">
+      <!-- Localisation -->
+      <div class="card-localisation">
         <img
           src="../images/marqueur.png"
           alt="Icône localisation"
-          class="localisation__icon"
+          class="card-localisation-icon"
         />
         <p>
-          <span data-user="localisation" class="user-localisation"
+          <span data-user="localisation" class="card-localisation-user"
             >Ville, Pays</span
           >
         </p>
       </div>
 
+      <!-- Bouton afficher la bio -->
       <button
-        id="btn-profil"
+        id="btn_profil"
+        class="card-profil"
         aria-expanded="false"
         aria-controls="match-profil"
         aria-label="Afficher la bio du profil"
+        type="button"
       >
         ⬆
       </button>
+    </div>
+    <!-- /.card-info -->
 
-      <div id="match-profil" class="match-profil" hidden>
-        <div id="bio-profil">
-          <p>Ma bio :</p>
-          <p data-user="bio" class="user-bio">Aucune bio renseignée.</p>
-        </div>
-      </div>
+    <!-- Boutons d'action : skip / match -->
+    <div id="choix">
+      <button class="skip" aria-label="Passer ce profil" type="button">
+        ❌
+      </button>
+      <button class="matchbtn" aria-label="J'aime ce profil" type="button">
+        ❤️
+      </button>
     </div>
   </div>
+  <!-- /.card -->
 
-  <div id="choix">
-    <button class="skip" aria-label="Passer ce profil">❌</button>
-    <button class="matchbtn" aria-label="J'aime ce profil">❤️</button>
+  <!-- Section bio détaillée (initialement cachée) -->
+  <div id="match-profil" class="match-profil" hidden>
+    <div id="bio-profil">
+      <h1 class="user-prenom">
+        <span data-user="prenom"></span>,
+        <span data-user="age" class="user-age"></span>
+      </h1>
+
+      <p>
+        <strong>Statut :</strong> <span data-user="statut">Non renseigné</span>
+      </p>
+      <p>
+        <strong>Orientation :</strong>
+        <span data-user="orientation">Non renseigné</span>
+      </p>
+      <p>
+        <strong>Relation recherchée :</strong>
+        <span data-user="relation_recherchee">Non renseigné</span>
+      </p>
+      <p>
+        <strong>Centres d’intérêt :</strong>
+        <span data-user="interets">Non renseigné</span>
+      </p>
+      <p><strong>Bio :</strong> <span data-user="bio">Non renseigné</span></p>
+      <p>
+        <strong>Le petit + :</strong>
+        <span data-user="petit_plus">Non renseigné</span>
+      </p>
+    </div>
+    <!-- /#bio-profil -->
   </div>
+  <!-- /#match-profil -->
 </section>

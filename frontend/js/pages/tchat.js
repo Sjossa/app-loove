@@ -63,6 +63,8 @@ export class Tchat {
       const data = await response.json();
 
       if (data.status === "success" && data.user) {
+        if (data.user) console.table(data.user);
+
         this.list_match.innerHTML = "";
 
         if (data.user.length > 0) {
